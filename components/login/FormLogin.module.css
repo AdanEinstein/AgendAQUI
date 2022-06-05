@@ -1,0 +1,57 @@
+.container{
+    /* Flexbox */
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    /* Tamanho */
+    height: 100%;
+}
+
+.saudacao{
+    /* Margins */
+    margin-bottom: 2rem;
+    /* Alinhamneto */
+    text-align: left;
+    /* Fontes */
+    font-size: x-large;
+}
+
+.saudacao h3{
+    /* Margins */
+    margin-bottom: 1rem;
+}
+
+.FormLogin{
+    /* Cores */
+    background: #222;
+    /* Margins */
+    padding: 2rem;
+    /* Bordas */
+    border-radius: 0.5rem;
+    /* Tamanho */
+    width: 90%;
+}
+
+
+@media (min-width: 800px) {
+    .FormLogin{
+        /* Tamanho */
+        width: 60%;
+    }
+}
+
+@media (min-width: 1100px) {
+    .FormLogin{
+        /* Tamanho */
+        width: 30%;
+    }
+}
+
+.botoes{
+    /* Flexbox */
+    display: flex;
+    justify-content: flex-end;
+    /* Margins */
+    margin-top: 0.5rem;
+}

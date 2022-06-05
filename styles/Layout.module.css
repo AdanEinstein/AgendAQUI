@@ -1,0 +1,13 @@
+.Layout {
+    /* Cores */
+    background-color: #222;
+    /* Tamanho */
+    height: 100vh;
+    /* Grid */
+    display: grid;
+    grid-template-rows: 100px 1fr 50px;
+}
+
+.container {
+    display: flex;
+}

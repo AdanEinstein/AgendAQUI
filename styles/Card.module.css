@@ -1,0 +1,12 @@
+.Card{
+    /* Cores */
+    background-color: rgba(78, 78, 78, 0.888);
+    color: aliceblue;
+    /* Tamanho */
+    width: calc(100% - 2rem);
+    height: calc(100% - 2rem);
+    /* Margin */
+    margin: 1rem;
+    /* Bordas */
+    border-radius: 0.5rem;
+}

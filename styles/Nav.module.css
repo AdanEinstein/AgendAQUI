@@ -1,0 +1,70 @@
+.NavTopo{
+    /* Cores */
+    background: linear-gradient(to right, rgb(240, 152, 25), rgb(237, 222, 93));
+    /* Tamanho */
+    height: 3rem;
+    /* Sombras */
+    box-shadow: #222 0.5rem 0.5rem 2rem;
+    /* FlexBox */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.NavLateral{
+    /* Tamanho */
+    width: 20%;
+    height: 100%;
+    /* Cores */
+    background: rgba(240, 150, 25, 0.849);
+    /* Sombras */
+    box-shadow: #222 0.5rem 0.5rem 2rem;
+    /* FlexBox */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.NavLateral .link {
+    /* Cores */
+    background-color: #222;
+    color: aliceblue;
+    /* Margins */
+    margin: 0.1rem;
+    padding: 0.5rem;
+    /* Bordas */
+    border-radius: 0.2rem;
+    /* Sombras */
+    box-shadow: #222 0.2rem 0.2rem 2rem;
+    /* Fontes */
+    font-weight: lighter;
+    /* Tamanho */
+    width: 95%;
+}
+
+.NavTopo .link {
+    /* Cores */
+    background-color: #222;
+    color: aliceblue;
+    /* Margins */
+    margin: 0.1rem;
+    padding: 0.5rem;
+    /* Bordas */
+    border-radius: 0.2rem;
+    /* Sombras */
+    box-shadow: #222 0.2rem 0.2rem 2rem;
+    /* Fontes */
+    font-weight: lighter;
+}
+
+a.link{
+    /* cursor */
+    cursor: pointer;
+}
+
+a.link:hover{
+    /* Cores */
+    background-color: aliceblue;
+    color: #000;
+}

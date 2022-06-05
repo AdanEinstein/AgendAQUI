@@ -1,0 +1,21 @@
+.Button{
+    /* Fontes */
+    font-size: 1.2rem;
+    font-weight: lighter;
+    /* Margins */
+    padding: 0.3rem;
+    /* Bordas */
+    border: none;
+    border-radius: 0.3rem;
+    /* Cores */
+    background-color: goldenrod;
+    color: rgb(0, 0, 0);
+}
+
+.Button:hover{
+    /* Cores */
+    background-color: #FFF;
+    color: goldenrod;
+    /* Cursor */
+    cursor: pointer;
+}

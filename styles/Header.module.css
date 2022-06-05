@@ -1,0 +1,21 @@
+.Header{
+    /* Alinhamento */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Cores */
+    background: linear-gradient(to right, rgb(240, 152, 25), rgb(237, 222, 93));
+    color: #222;
+    /* Fontes */
+    font-size: 1.4rem;
+}
+
+.Header > h1{
+    /* Cores */
+    background: #222;
+    color: aliceblue;
+    /* Bordas */
+    padding: 0.5rem;
+    border-radius: 0.8rem;
+    box-shadow: #222 0.5rem 0.5rem 1rem;
+}
