@@ -1,7 +1,7 @@
 import axios from "axios";
 export default async function GetToken(request, response) {
-    const login = request.query.login;
-    const password = request.query.password;
+    const login = request.param.login;
+    const password = request.param.password;
     const api = await axios.post(
         "https://sistema-agendaqui.vercel.app/api/gettoken",
         {
