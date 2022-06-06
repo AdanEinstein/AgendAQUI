@@ -10,5 +10,5 @@ export default async function GetToken(request, response) {
         },
         { "Content-Type": "application/json" }
     );
-    response(api.status(200).json());
+    response(api.json());
 }
