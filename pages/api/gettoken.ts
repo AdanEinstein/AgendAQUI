@@ -9,5 +9,5 @@ export default async function GetToken(request, response) {
 	);
 
     const tokenData = await token.data
-	return tokenData;
+	response(tokenData)
 }
