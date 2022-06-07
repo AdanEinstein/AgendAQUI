@@ -3,7 +3,7 @@ export default async function GetToken(request, response) {
     const login = request.param.login;
     const password = request.param.password;
     const api = await axios.post(
-        "https://sistema-agendaqui.vercel.app/api/gettoken",
+        "https://agendaqui-api.herokuapp.com/login",
         {
             login,
             password,
