@@ -56,6 +56,7 @@ const FormLogin: React.FC = () => {
 	}, [loginRef, passwordRef]);
 
 	useEffect(() => {
+		localStorage.clear()
 		loginRef.current.focus();
 	}, []);
 
