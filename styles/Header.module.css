@@ -6,8 +6,6 @@
     /* Cores */
     background: linear-gradient(to right, rgb(240, 152, 25), rgb(237, 222, 93));
     color: #222;
-    /* Fontes */
-    font-size: 1.4rem;
 }
 
 .Header > h1{
@@ -18,4 +16,6 @@
     padding: 0.5rem;
     border-radius: 0.8rem;
     box-shadow: #222 0.5rem 0.5rem 1rem;
+    /* Fontes */
+    font-size: 2.5rem;
 }

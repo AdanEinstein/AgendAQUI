@@ -1,93 +1,28 @@
-.container{
-    /* Flexbox */
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+.FormLogin{
     /* Tamanho */
     height: 100%;
-}
-
-.saudacao{
-    /* Margins */
-    margin-bottom: 1rem;
-    /* Alinhamneto */
-    text-align: left;
-    /* Fontes */
-    font-size: x-large;
-}
-
-.saudacao h3{
-    /* Margins */
-    margin-bottom: 1rem;
-}
-
-.FormLogin{
     /* Cores */
-    background: #222;
-    /* Margins */
-    padding: 2rem;
-    /* Bordas */
-    border-radius: 0.5rem;
-    /* Tamanho */
-    width: 90%;
-}
-
-.inputs{
-    /* Flexbox */
+    color: black;
+    /* FlexBox */
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.inputs input,.inputs label{
-    /* Tamanho */
-    width: 100%;
-    /* Fontes */
-    font-size: larger;
-    /* Margins */
-    margin: 10px 0 0 0;
-}
-
-@media (min-width: 800px) {
-    .FormLogin{
-        /* Tamanho */
-        width: 60%;
-    }
-}
-
-@media (min-width: 1100px) {
-    .FormLogin{
-        /* Tamanho */
-        width: 30%;
-    }
-}
-
-.botoes{
-    /* Flexbox */
-    display: flex;
-    justify-content: flex-end;
-    /* Margins */
-    margin-top: 1rem;
-}
-
-.botoes button{
-    /* Fontes */
-    font-size: larger;
-    font-weight: lighter;
-    font-family: Arial, Helvetica, sans-serif;
-    /* Tamanho */
-    padding: 0.3rem;
-    width: 100%;
+.FormLogin h2{
     /* Cores */
-    background-color: goldenrod;
+    color: aliceblue;
+    /* Alinhamento */
+    text-align: center;
+    /* Margins */
+    margin-bottom: 2rem;
+}
+
+.FormLogin form{
+    /* Cores */
+    background: rgb(38, 38, 38);
+    /* Margins */
+    padding: 3.5rem 2.5rem;
     /* Bordas */
-    border: none;
-}
-
-.botoes button:hover{
-    /* Cores */
-    background-color: #000;
-    color: goldenrod;
-    /* cursor */
-    cursor: pointer;
+    border-radius: 1rem;
 }

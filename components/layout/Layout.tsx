@@ -23,7 +23,7 @@ const Layout: React.FC<Props> = ({ menu, children }) => {
 				{menu && (
 					<Nav
 						links={["Home", "Menu 1", "Menu 2", "Menu 3"]}
-						lateral={menu.lateral}
+						lateral={menu?.lateral}
 					/>
 				)}
 				{children}

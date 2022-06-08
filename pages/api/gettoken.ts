@@ -7,7 +7,6 @@ export default async function GetToken(request, response) {
 		"https://agendaqui-api.herokuapp.com/login",
 		{login, password}
 	);
-
     const tokenData = await token.data
-	response(tokenData)
+	response.json(tokenData)
 }

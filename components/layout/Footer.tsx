@@ -1,5 +1,5 @@
 import styles from "/styles/Footer.module.css"
-const Footer: React.FC<any> = () => {
+const Footer: React.FC = () => {
     return (
         <footer className={styles.Footer}>
             <p>Todos os direitos reservados</p>
