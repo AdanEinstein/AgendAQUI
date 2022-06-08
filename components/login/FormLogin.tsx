@@ -31,6 +31,11 @@ const FormLogin: React.FC = () => {
 			);
 			if (token.status == 200) {
 				localStorage.setItem("token", token.data);
+				setFeedback({
+					icon: "bi bi-check-circle",
+					message: "Login válido",
+					color: "text-success",
+				});
 			} else {
 				setFeedback({
 					icon: "bi bi-exclamation-triangle",
