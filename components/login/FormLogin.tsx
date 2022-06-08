@@ -20,8 +20,8 @@ const FormLogin: React.FC = () => {
 	const passwordRef = useRef<HTMLInputElement>();
 
 	const handleEntrar = useCallback(async () => {
+		loading.current = true;
 		try {
-			loading.current = true;
 			const login = loginRef.current.value;
 			const password = passwordRef.current.value;
 
@@ -90,7 +90,7 @@ const FormLogin: React.FC = () => {
 					) : (
 						<Button
 							className="w-100"
-							// onClick={handleEntrar}
+							onClick={handleEntrar}
 						>
 							Entrar
 						</Button>
