@@ -36,12 +36,14 @@ const FormLogin: React.FC = () => {
 					message: "Login válido",
 					color: "text-success",
 				});
+				loading.current = false;
 			} else {
 				setFeedback({
 					icon: "bi bi-exclamation-triangle",
 					message: "Informações inválidas!",
 					color: "text-danger",
 				});
+				loading.current = false;
 			}
 		} catch (error) {
 			setFeedback({
