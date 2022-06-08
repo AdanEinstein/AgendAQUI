@@ -29,7 +29,7 @@ const FormLogin: React.FC = () => {
 				"https://sistema-agendaqui.vercel.app/api/gettoken",
 				{ login, password }
 			);
-			if (token.status == 200) {
+			if (token.status === 200) {
 				localStorage.setItem("token", token.data);
 				setFeedback({
 					icon: "bi bi-check-circle",
@@ -56,7 +56,7 @@ const FormLogin: React.FC = () => {
 	}, [loginRef, passwordRef]);
 
 	useEffect(() => {
-		localStorage.clear()
+		localStorage.removeItem("token")
 		loginRef.current.focus();
 	}, []);
 
