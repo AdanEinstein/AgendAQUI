@@ -19,34 +19,34 @@ const FormLogin: React.FC = () => {
 	const loginRef = useRef<HTMLInputElement>();
 	const passwordRef = useRef<HTMLInputElement>();
 
-	// const handleEntrar = useCallback(async () => {
-	// 	try {
-	// 		loading.current = true;
-	// 		const login = loginRef.current.value;
-	// 		const password = passwordRef.current.value;
+	const handleEntrar = useCallback(async () => {
+		try {
+			loading.current = true;
+			const login = loginRef.current.value;
+			const password = passwordRef.current.value;
 
-	// 		const token = await axios.post<AxiosPromise, AxiosResponse<string>>(
-	// 			"https://sistema-agendaqui.vercel.app/api/gettoken",
-	// 			{ login, password }
-	// 		);
-	// 		if (token.status == 200) {
-	// 			localStorage.setItem("token", token.data);
-	// 		} else {
-	// 			setFeedback({
-	// 				icon: "bi bi-exclamation-triangle",
-	// 				message: "Informações inválidas!",
-	// 				color: "text-danger",
-	// 			});
-	// 		}
-	// 	} catch (error) {
-	// 		setFeedback({
-	// 			icon: "bi bi-exclamation-diamond-fill",
-	// 			message: "Estamos com um problema, mais tarde!",
-	// 			color: "text-warning",
-	// 		});
-	// 		loading.current = false;
-	// 	}
-	// }, [loginRef, passwordRef]);
+			const token = await axios.post<AxiosPromise, AxiosResponse<string>>(
+				"https://sistema-agendaqui.vercel.app/api/gettoken",
+				{ login, password }
+			);
+			if (token.status == 200) {
+				localStorage.setItem("token", token.data);
+			} else {
+				setFeedback({
+					icon: "bi bi-exclamation-triangle",
+					message: "Informações inválidas!",
+					color: "text-danger",
+				});
+			}
+		} catch (error) {
+			setFeedback({
+				icon: "bi bi-exclamation-diamond-fill",
+				message: "Estamos com um problema, mais tarde!",
+				color: "text-warning",
+			});
+			loading.current = false;
+		}
+	}, [loginRef, passwordRef]);
 
 	useEffect(() => {
 		loginRef.current.focus();
