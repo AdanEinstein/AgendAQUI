@@ -5,6 +5,8 @@ import Link from "next/link";
 import { FormCheck } from "react-bootstrap";
 import MyModal from "../layout/Modal";
 import FeedbackText, { IFeedback } from "../utils/FeedbackText";
+import axios, { AxiosPromise, AxiosResponse } from "axios";
+import { useRouter } from "next/router";
 
 const feedbackDefault = {
 	icon: "bi bi-info-circle",
@@ -13,6 +15,7 @@ const feedbackDefault = {
 };
 
 const FormCadastroLogin: React.FC = () => {
+	const route = useRouter()
 	// Estados pertinentes ao componente
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -69,13 +72,40 @@ const FormCadastroLogin: React.FC = () => {
 		}
 	}, [loginRef, passwordRef, confirmPasswordRef]);
 
-	const handleConfirm = useCallback(() => {
-		
-	}, [])
+	const handleConfirm = useCallback(async () => {
+		setShowModal(false)
+		setLoading(true)
+		try{
+			const newLogin = await axios.post<AxiosPromise, AxiosResponse<any>>(
+				"https://sistema-agendaqui.vercel.app/api/cadastralogin",
+				{
+					login: loginRef.current.value,
+					password: passwordRef.current.value,
+				}
+			);
+			if (newLogin.status === 200) {
+				route.push(`/${tipo}`)
+			} else {
+				setFeedback({
+					icon: "bi bi-exclamation-diamond-fill",
+					message: "Login inválido!",
+					color: "text-warning",
+				});
+				setLoading(false);
+			}
+		} catch(error){
+			setFeedback({
+				icon: "bi bi-exclamation-diamond-fill",
+				message: "Erro para cadastrar!",
+				color: "text-warning",
+			});
+			setLoading(false);
+		}
+	}, []);
 
 	useEffect(() => {
-		loginRef.current.focus()
-	}, [loginRef])
+		loginRef.current.focus();
+	}, [loginRef]);
 
 	return (
 		<>
@@ -93,24 +123,27 @@ const FormCadastroLogin: React.FC = () => {
 								type="text"
 								placeholder="Login"
 								ref={loginRef}
-							/>
+								disabled={loading}
+								/>
 						</FloatingLabel>
 						<FloatingLabel label="Senha" className="mb-3">
 							<Form.Control
 								type="password"
 								placeholder="Senha"
 								ref={passwordRef}
-							/>
+								disabled={loading}
+								/>
 						</FloatingLabel>
 						<FloatingLabel
 							label="Confirme sua senha"
 							className="mb-3"
-						>
+							>
 							<Form.Control
 								type="password"
 								placeholder="Senha"
 								ref={confirmPasswordRef}
-							/>
+								disabled={loading}
+								/>
 						</FloatingLabel>
 						<FeedbackText feedback={feedback} />
 						{/* Seleção do tipo de usuários */}
@@ -120,6 +153,7 @@ const FormCadastroLogin: React.FC = () => {
 								type="switch"
 								label="Eu sou"
 								onClick={handleTipoUsuario}
+								disabled={loading}
 							/>
 							<span
 								className={`mx-2 + ${

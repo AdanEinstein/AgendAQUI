@@ -82,6 +82,7 @@ const FormLogin: React.FC = () => {
 							type="text"
 							placeholder="Login"
 							ref={loginRef}
+							disabled={loading}
 						/>
 					</FloatingLabel>
 					<FloatingLabel label="Senha">
@@ -89,6 +90,7 @@ const FormLogin: React.FC = () => {
 							type="password"
 							placeholder="Senha"
 							ref={passwordRef}
+							disabled={loading}
 						/>
 					</FloatingLabel>
 					<FeedbackText feedback={feedback}/>
