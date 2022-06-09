@@ -2,12 +2,8 @@ import styles from "./FormLogin.module.css";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios, { AxiosPromise, AxiosResponse } from "axios";
-
-interface IFeedback {
-	icon?: string;
-	message: string;
-	color: string;
-}
+import Link from "next/link";
+import FeedbackText, { IFeedback } from "../utils/FeedbackText";
 
 const FormLogin: React.FC = () => {
 	const [feedback, setFeedback] = useState<IFeedback>({
@@ -95,23 +91,25 @@ const FormLogin: React.FC = () => {
 							ref={passwordRef}
 						/>
 					</FloatingLabel>
-					<div className="my-3" style={{ fontSize: "0.8rem" }}>
-						<i
-							className={feedback?.icon + " " + feedback.color}
-						></i>
-						<span className={feedback.color}>
-							{" "}
-							{feedback.message}
-						</span>
-					</div>
+					<FeedbackText feedback={feedback}/>
 					{loading ? (
 						<Button className="w-100" disabled>
 							Loading...
 						</Button>
 					) : (
-						<Button className="w-100" onClick={handleEntrar}>
-							Entrar
-						</Button>
+						<>
+							<Button
+								className="w-100 mb-3"
+								onClick={handleEntrar}
+							>
+								Entrar
+							</Button>
+							<Link href="/cadastro">
+								<a className="btn btn-sm btn-outline-warning">
+									Registre-se aqui!
+								</a>
+							</Link>
+						</>
 					)}
 				</Form>
 			</div>

@@ -1,0 +1,28 @@
+.FormCadastroLogin{
+    /* Tamanho */
+    height: 100%;
+    /* Cores */
+    color: black;
+    /* FlexBox */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.FormCadastroLogin h2{
+    /* Cores */
+    color: aliceblue;
+    /* Alinhamento */
+    text-align: center;
+    /* Margins */
+    margin-bottom: 2rem;
+}
+
+.FormCadastroLogin form{
+    /* Cores */
+    background: rgb(38, 38, 38);
+    /* Margins */
+    padding: 3.5rem 2.5rem;
+    /* Bordas */
+    border-radius: 1rem;
+}
