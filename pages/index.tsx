@@ -8,7 +8,6 @@ const Home: React.FC = () => {
         <Layout>
             <Card>
                 <FormLogin />
-                {/* <FormCadastroLogin/> */}
             </Card>
         </Layout>
     );
