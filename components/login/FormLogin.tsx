@@ -15,48 +15,61 @@ const FormLogin: React.FC = () => {
 		message: "Digite corretamente as informações",
 		color: "text-primary",
 	});
-	const loading = useRef<boolean>(false)
+	const [loading, setLoading] = useState<boolean>(false);
 	const loginRef = useRef<HTMLInputElement>();
 	const passwordRef = useRef<HTMLInputElement>();
 
 	const handleEntrar = useCallback(async () => {
-		loading.current = true;
+		setLoading(true);
 		try {
 			const login = loginRef.current.value;
 			const password = passwordRef.current.value;
 
-			const token = await axios.post<AxiosPromise, AxiosResponse<string>>(
-				"https://sistema-agendaqui.vercel.app/api/gettoken",
-				{ login, password }
-			);
-			if (token.status === 200) {
-				localStorage.setItem("token", token.data);
-				setFeedback({
-					icon: "bi bi-check-circle",
-					message: "Login válido",
-					color: "text-success",
-				});
-				loading.current = false;
-			} else {
+			if (login === "") {
 				setFeedback({
 					icon: "bi bi-exclamation-triangle",
-					message: "Informações inválidas!",
+					message: "Preencha o campo o login!",
 					color: "text-danger",
 				});
-				loading.current = false;
+				setLoading(false);
+			} else if (password === "") {
+				setFeedback({
+					icon: "bi bi-exclamation-triangle",
+					message: "Preencha o campo de senha!",
+					color: "text-danger",
+				});
+				setLoading(false);
+			} else {
+				const token = await axios.post<
+					AxiosPromise,
+					AxiosResponse<string>
+				>("https://sistema-agendaqui.vercel.app/api/gettoken", {
+					login,
+					password,
+				});
+
+				if (token.status === 200) {
+					localStorage.setItem("token", token.data);
+					setFeedback({
+						icon: "bi bi-check-circle",
+						message: "Login válido",
+						color: "text-success",
+					});
+					setLoading(false);
+				}
 			}
 		} catch (error) {
 			setFeedback({
 				icon: "bi bi-exclamation-diamond-fill",
-				message: "Estamos com um problema, mais tarde!",
+				message: "Informações inválidas!",
 				color: "text-warning",
 			});
-			loading.current = false;
+			setLoading(false);
 		}
 	}, [loginRef, passwordRef]);
 
 	useEffect(() => {
-		localStorage.removeItem("token")
+		localStorage.removeItem("token");
 		loginRef.current.focus();
 	}, []);
 
@@ -82,7 +95,7 @@ const FormLogin: React.FC = () => {
 							ref={passwordRef}
 						/>
 					</FloatingLabel>
-					<div className="my-3">
+					<div className="my-3" style={{ fontSize: "0.8rem" }}>
 						<i
 							className={feedback?.icon + " " + feedback.color}
 						></i>
@@ -91,15 +104,12 @@ const FormLogin: React.FC = () => {
 							{feedback.message}
 						</span>
 					</div>
-					{loading.current ? (
+					{loading ? (
 						<Button className="w-100" disabled>
 							Loading...
 						</Button>
 					) : (
-						<Button
-							className="w-100"
-							onClick={handleEntrar}
-						>
+						<Button className="w-100" onClick={handleEntrar}>
 							Entrar
 						</Button>
 					)}
