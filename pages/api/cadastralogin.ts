@@ -14,7 +14,7 @@ export default async function CadastrarLogin(request, response) {
 		const loginRequest = await axios.post(
 			"https://agendaqui-api.herokuapp.com/api/login/salvar",
 			{ login, password },
-			{ headers: { Authorization: `Bearer ${tokenData}` } }
+			{ headers: { "Authorization": `Bearer ${tokenData}` } }
 		);
         const loginData = await loginRequest.data
         response.json(loginData)
