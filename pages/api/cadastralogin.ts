@@ -24,7 +24,6 @@ export default async function CadastrarLogin(request, response) {
 				},
 			}
 		);
-		console.log(loginRequest);
 		const loginData = await loginRequest.data;
 		response.json(loginData);
 	} else {

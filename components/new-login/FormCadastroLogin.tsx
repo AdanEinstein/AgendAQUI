@@ -69,9 +69,9 @@ const FormCadastroLogin: React.FC = () => {
 		}
 	}, [loginRef, passwordRef, confirmPasswordRef]);
 
-	// const handleConfirm = useCallback(() => {
-
-	// }, [])
+	const handleConfirm = useCallback(() => {
+		
+	}, [])
 
 	useEffect(() => {
 		loginRef.current.focus()
@@ -189,7 +189,7 @@ const FormCadastroLogin: React.FC = () => {
 					setShowModal(false);
 					setLoading(false);
 				}}
-				// onConfirm={handleConfirm}
+				onConfirm={handleConfirm}
 			>
 				<h4>Tipo de usuário</h4>
 				<p>
