@@ -1,6 +1,4 @@
 import axios, { AxiosResponse } from "axios";
-import { IncomingMessage, ServerResponse } from "http";
-import { RequestHandler } from "next/dist/server/next";
 
 export default async function CadastrarLogin(request, response) {
 	const loginAuth = process.env.LOGIN_AUTH;
