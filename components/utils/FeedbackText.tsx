@@ -1,6 +1,6 @@
 export interface IFeedback {
 	icon?: string;
-	message: string;
+	message: any;
 	color: string;
 }
 

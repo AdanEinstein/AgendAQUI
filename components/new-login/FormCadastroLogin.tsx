@@ -5,8 +5,9 @@ import Link from "next/link";
 import { FormCheck } from "react-bootstrap";
 import MyModal from "../layout/Modal";
 import FeedbackText, { IFeedback } from "../utils/FeedbackText";
-import axios, { AxiosPromise, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/router";
+import { profileEnv } from "../../auth/baseUrl";
 
 const feedbackDefault = {
 	icon: "bi bi-info-circle",
@@ -15,20 +16,27 @@ const feedbackDefault = {
 };
 
 const FormCadastroLogin: React.FC = () => {
-	const route = useRouter()
+	const route = useRouter();
 	// Estados pertinentes ao componente
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [feedback, setFeedback] = useState<IFeedback>(feedbackDefault);
 	const [tipo, setTipo] = useState<"cliente" | "prestador">("cliente");
 	//Referencias
-	const loginRef = useRef<HTMLInputElement>();
-	const passwordRef = useRef<HTMLInputElement>();
-	const confirmPasswordRef = useRef<HTMLInputElement>();
+	const tipoRef = useRef<"cliente" | "prestador">(tipo);
+	const loginRef = useRef<HTMLInputElement>(null);
+	const passwordRef = useRef<HTMLInputElement>(null);
+	const confirmPasswordRef = useRef<HTMLInputElement>(null);
 	// Funções chamadas
 	const handleTipoUsuario = useCallback(() => {
-		tipo === "cliente" ? setTipo("prestador") : setTipo("cliente");
-	}, [tipo]);
+		if (tipo === "cliente") {
+			setTipo("prestador");
+			tipoRef.current = "prestador";
+		} else {
+			setTipo("cliente");
+			tipoRef.current = "cliente";
+		}
+	}, [tipo, tipoRef]);
 
 	const handleContinuar = useCallback(() => {
 		setLoading(true);
@@ -72,35 +80,34 @@ const FormCadastroLogin: React.FC = () => {
 		}
 	}, [loginRef, passwordRef, confirmPasswordRef]);
 
-	const handleConfirm = useCallback(async () => {
-		setShowModal(false)
-		setLoading(true)
-		try{
-			const newLogin = await axios.post<AxiosPromise, AxiosResponse<any>>(
-				"https://sistema-agendaqui.vercel.app/api/cadastralogin",
-				{
-					login: loginRef.current.value,
-					password: passwordRef.current.value,
+	const handleConfirm = useCallback(() => {
+		setShowModal(false);
+		setLoading(true);
+		axios
+			.post(`${profileEnv.baseUrl}/cadastralogin`, {
+				login: loginRef.current.value,
+				password: passwordRef.current.value,
+			})
+			.then((newLogin) => {
+				if (newLogin.status === 201) {
+					route.push(`/${tipoRef.current}`);
+				} else {
+					setFeedback({
+						icon: "bi bi-exclamation-diamond-fill",
+						message: newLogin.data,
+						color: "text-warning",
+					});
+					setLoading(false);
 				}
-			);
-			if (newLogin.status === 200) {
-				route.push(`/${tipo}`)
-			} else {
+			})
+			.catch((err: AxiosError) => {
 				setFeedback({
 					icon: "bi bi-exclamation-diamond-fill",
-					message: "Login inválido!",
+					message: err.response.data,
 					color: "text-warning",
 				});
 				setLoading(false);
-			}
-		} catch(error){
-			setFeedback({
-				icon: "bi bi-exclamation-diamond-fill",
-				message: "Erro para cadastrar!",
-				color: "text-warning",
 			});
-			setLoading(false);
-		}
 	}, []);
 
 	useEffect(() => {
@@ -124,7 +131,7 @@ const FormCadastroLogin: React.FC = () => {
 								placeholder="Login"
 								ref={loginRef}
 								disabled={loading}
-								/>
+							/>
 						</FloatingLabel>
 						<FloatingLabel label="Senha" className="mb-3">
 							<Form.Control
@@ -132,18 +139,18 @@ const FormCadastroLogin: React.FC = () => {
 								placeholder="Senha"
 								ref={passwordRef}
 								disabled={loading}
-								/>
+							/>
 						</FloatingLabel>
 						<FloatingLabel
 							label="Confirme sua senha"
 							className="mb-3"
-							>
+						>
 							<Form.Control
 								type="password"
 								placeholder="Senha"
 								ref={confirmPasswordRef}
 								disabled={loading}
-								/>
+							/>
 						</FloatingLabel>
 						<FeedbackText feedback={feedback} />
 						{/* Seleção do tipo de usuários */}
@@ -152,7 +159,7 @@ const FormCadastroLogin: React.FC = () => {
 								className="mx-1"
 								type="switch"
 								label="Eu sou"
-								onClick={handleTipoUsuario}
+								onChange={handleTipoUsuario}
 								disabled={loading}
 							/>
 							<span
@@ -217,7 +224,7 @@ const FormCadastroLogin: React.FC = () => {
 			{/* Modal */}
 			<MyModal
 				title="Confirmação de Login"
-				labelButton="Correto"
+				labelbutton="Correto"
 				show={showModal}
 				onHide={() => {
 					setShowModal(false);

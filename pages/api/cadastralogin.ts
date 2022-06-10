@@ -1,32 +1,44 @@
-import axios, { AxiosPromise, AxiosResponse } from "axios";
+import { NextApiResponse } from "next";
+import { NextApiRequest } from "next";
+import axios, { AxiosError } from "axios";
+import { profileEnv } from "../../auth/baseUrl";
 
-export default async function CadastrarLogin(request, response) {
+export default function CadastrarLogin(
+	request: NextApiRequest,
+	response: NextApiResponse
+) {
 	const loginAuth = process.env.LOGIN_AUTH;
 	const passwordAuth = process.env.PASSWORD_AUTH;
-	const token = await axios.post<AxiosPromise, AxiosResponse<string>>(
-		"https://sistema-agendaqui.vercel.app/api/gettoken",
-		{
-			loginAuth,
-			passwordAuth,
-		}
-	);
-	if (token.status === 200) {
-		const tokenData = token.data;
-		const login = request.body.login;
-		const password = request.body.password;
-		const loginRequest = await axios.post(
-			"https://agendaqui-api.herokuapp.com/api/login/salvar",
-			{ login, password },
-			{
-				headers: {
-					'Authorization': `Bearer ${tokenData}`,
-					"Content-Type": "application/json",
+	axios
+		.post(`${profileEnv.baseUrl}/gettoken`, {
+			login: loginAuth,
+			password: passwordAuth,
+		})
+		.then((token) => token.data)
+		.then((tokenData) => {
+			axios.post(
+				`${profileEnv.baseUrlJava}/api/login/salvar`,
+				{
+					login: request.body.login,
+					password: request.body.password,
 				},
-			}
-		);
-		const loginData = await loginRequest.data;
-		response.json(loginData);
-	} else {
-		response.json({ erro: "Erro para cadastrar" });
-	}
+				{
+					headers: {
+						Authorization: `Bearer ${tokenData}`,
+						"Content-Type": "application/json",
+					},
+				}
+			).then(newLogin => newLogin.data)
+			 .then(newLoginData => response.status(201).json(newLoginData))
+			 .catch((err: AxiosError) => {
+				 if (err.response.status < 500) {
+					response.status(404).send(err.response.data)
+				 } else {
+					response.status(500).send("Estamos com um problema, tente mais tarde!")
+				 }				 
+			 });
+		})
+		.catch((err: AxiosError) => {
+			response.status(500).send("Estamos com um problema, tente mais tarde!")
+		});
 }

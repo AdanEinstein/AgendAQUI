@@ -1,9 +1,10 @@
 import styles from "./FormLogin.module.css";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { useCallback, useEffect, useRef, useState } from "react";
-import axios, { AxiosPromise, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosPromise, AxiosResponse } from "axios";
 import Link from "next/link";
 import FeedbackText, { IFeedback } from "../utils/FeedbackText";
+import { profileEnv } from "../../auth/baseUrl";
 
 const FormLogin: React.FC = () => {
 	const [feedback, setFeedback] = useState<IFeedback>({
@@ -15,52 +16,56 @@ const FormLogin: React.FC = () => {
 	const loginRef = useRef<HTMLInputElement>();
 	const passwordRef = useRef<HTMLInputElement>();
 
-	const handleEntrar = useCallback(async () => {
+	const handleEntrar = useCallback(() => {
 		setLoading(true);
-		try {
-			const login = loginRef.current.value;
-			const password = passwordRef.current.value;
-
-			if (login === "") {
-				setFeedback({
-					icon: "bi bi-exclamation-triangle",
-					message: "Preencha o campo o login!",
-					color: "text-danger",
-				});
-				setLoading(false);
-			} else if (password === "") {
-				setFeedback({
-					icon: "bi bi-exclamation-triangle",
-					message: "Preencha o campo de senha!",
-					color: "text-danger",
-				});
-				setLoading(false);
-			} else {
-				const token = await axios.post<
-					AxiosPromise,
-					AxiosResponse<string>
-				>("https://sistema-agendaqui.vercel.app/api/gettoken", {
-					login,
-					password,
-				});
-
-				if (token.status === 200) {
-					localStorage.setItem("token", token.data);
-					setFeedback({
-						icon: "bi bi-check-circle",
-						message: "Login válido",
-						color: "text-success",
-					});
-					setLoading(false);
-				}
-			}
-		} catch (error) {
+		const login = loginRef.current.value;
+		const password = passwordRef.current.value;
+		if (login === "") {
 			setFeedback({
-				icon: "bi bi-exclamation-diamond-fill",
-				message: "Informações inválidas!",
-				color: "text-warning",
+				icon: "bi bi-exclamation-triangle",
+				message: "Preencha o campo o login!",
+				color: "text-danger",
 			});
 			setLoading(false);
+		} else if (password === "") {
+			setFeedback({
+				icon: "bi bi-exclamation-triangle",
+				message: "Preencha o campo de senha!",
+				color: "text-danger",
+			});
+			setLoading(false);
+		} else {
+			axios
+				.post(`${profileEnv.baseUrl}/gettoken`, {
+					login,
+					password,
+				})
+				.then((token) => {
+					if (token.status === 200) {
+						localStorage.setItem("token", token.data);
+						setFeedback({
+							icon: "bi bi-check-circle",
+							message: "Login válido",
+							color: "text-success",
+						});
+						setLoading(false);
+					} else {
+						setFeedback({
+							icon: "bi bi-exclamation-diamond-fill",
+							message: token.data,
+							color: "text-warning",
+						});
+						setLoading(false);
+					}
+				})
+				.catch((err: AxiosError) => {
+					setFeedback({
+						icon: "bi bi-exclamation-diamond-fill",
+						message: "Informações inválidas!",
+						color: "text-warning",
+					});
+					setLoading(false);
+				});
 		}
 	}, [loginRef, passwordRef]);
 
@@ -93,7 +98,7 @@ const FormLogin: React.FC = () => {
 							disabled={loading}
 						/>
 					</FloatingLabel>
-					<FeedbackText feedback={feedback}/>
+					<FeedbackText feedback={feedback} />
 					{loading ? (
 						<Button className="w-100" disabled>
 							Loading...

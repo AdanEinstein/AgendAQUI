@@ -12,7 +12,7 @@ import styles from "/styles/Modal.module.css";
 
 interface Props {
 	title: string;
-	labelButton: string;
+	labelbutton: string;
 	onConfirm?: MouseEventHandler<HTMLInputElement>;
 }
 
@@ -38,7 +38,7 @@ const MyModal: React.FC<ModalProps & Props> = (props) => {
 			</ModalBody>
 			<ModalFooter className={styles.ModalBottom}>
 				<Button variant="warning" onClick={props.onConfirm}>
-					{props.labelButton}
+					{props.labelbutton}
 				</Button>
 			</ModalFooter>
 		</Modal>
