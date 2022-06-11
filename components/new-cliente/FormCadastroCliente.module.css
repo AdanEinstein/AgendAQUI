@@ -1,4 +1,4 @@
-.FormLogin{
+.FormCadastroCliente{
     /* Tamanho */
     height: 100%;
     /* Cores */
@@ -9,7 +9,7 @@
     align-items: center;
 }
 
-.FormLogin h2{
+.FormCadastroCliente h2{
     /* Cores */
     color: aliceblue;
     /* Alinhamento */
@@ -18,15 +18,11 @@
     margin-bottom: 2rem;
 }
 
-.FormLogin form{
+.FormCadastroCliente form{
     /* Cores */
     background: rgb(38, 38, 38);
     /* Margins */
     padding: 3.5rem 2.5rem;
     /* Bordas */
     border-radius: 1rem;
-}
-
-.cadastro:hover{
-    text-decoration: underline;
 }

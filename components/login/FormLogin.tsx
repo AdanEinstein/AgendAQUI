@@ -1,10 +1,24 @@
 import styles from "./FormLogin.module.css";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import { useCallback, useEffect, useRef, useState } from "react";
-import axios, { AxiosError, AxiosPromise, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import FeedbackText, { IFeedback } from "../utils/FeedbackText";
 import { profileEnv } from "../../auth/baseUrl";
+import * as yup from "yup";
+
+yup.setLocale({
+	mixed: {
+		required(params) {
+			return `${params.path} não foi preenchido!`
+		},
+	},
+});
+
+const schema = yup.object().shape({
+	password: yup.string().required().label("Senha"),
+	login: yup.string().required().label("Login"),
+});
 
 const FormLogin: React.FC = () => {
 	const [feedback, setFeedback] = useState<IFeedback>({
@@ -18,28 +32,12 @@ const FormLogin: React.FC = () => {
 
 	const handleEntrar = useCallback(() => {
 		setLoading(true);
-		const login = loginRef.current.value;
-		const password = passwordRef.current.value;
-		if (login === "") {
-			setFeedback({
-				icon: "bi bi-exclamation-triangle",
-				message: "Preencha o campo o login!",
-				color: "text-danger",
-			});
-			setLoading(false);
-		} else if (password === "") {
-			setFeedback({
-				icon: "bi bi-exclamation-triangle",
-				message: "Preencha o campo de senha!",
-				color: "text-danger",
-			});
-			setLoading(false);
-		} else {
-			axios
-				.post(`${profileEnv.baseUrl}/gettoken`, {
-					login,
-					password,
-				})
+		const user = {
+			login: loginRef.current.value,
+			password: passwordRef.current.value,
+		};
+		schema.validate(user).then(() => {
+			axios.post(`${profileEnv.baseUrl}/gettoken`, user)
 				.then((token) => {
 					if (token.status === 200) {
 						localStorage.setItem("token", token.data);
@@ -66,7 +64,14 @@ const FormLogin: React.FC = () => {
 					});
 					setLoading(false);
 				});
-		}
+		}).catch((err: yup.ValidationError) => {
+			setFeedback({
+				icon: "bi bi-exclamation-triangle",
+				message: err.errors,
+				color: "text-danger",
+			});
+			setLoading(false);
+		});
 	}, [loginRef, passwordRef]);
 
 	useEffect(() => {
@@ -112,8 +117,14 @@ const FormLogin: React.FC = () => {
 								Entrar
 							</Button>
 							<Link href="/cadastro">
-								<a className="btn btn-sm btn-outline-warning">
-									Registre-se aqui!
+								<a
+									className={
+										"text-decoration-none text-warning fw-bolder d-block text-center"
+									}
+								>
+									<span className={styles.cadastro}>
+										Clique aqui para cadastrar-se
+									</span>
 								</a>
 							</Link>
 						</>

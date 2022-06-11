@@ -8,11 +8,31 @@ import FeedbackText, { IFeedback } from "../utils/FeedbackText";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { profileEnv } from "../../auth/baseUrl";
+import * as yup from "yup";
 
 const feedbackDefault = {
 	icon: "bi bi-info-circle",
 	message: "Digite corretamente as informações",
 	color: "text-primary",
+};
+
+//Validation form
+yup.setLocale({
+	mixed: {
+		required(params) {
+			return `${params.path} não foi preenchido!`
+		},
+	}
+})
+
+const schema = yup.object().shape({
+	confirmPassword: yup.string().required().label("Confirmação de senha"),
+	password: yup.string().required().label("Senha"),
+	login: yup.string().required().label("Login"),
+});
+
+const testSenhas = function (pwd: string, confPwd: string): void {
+	if (pwd != confPwd) throw new yup.ValidationError("Senhas inválidas");
 };
 
 const FormCadastroLogin: React.FC = () => {
@@ -40,44 +60,25 @@ const FormCadastroLogin: React.FC = () => {
 
 	const handleContinuar = useCallback(() => {
 		setLoading(true);
-		const login = loginRef.current.value;
-		const password = passwordRef.current.value;
-		const confirmPassword = confirmPasswordRef.current.value;
+		const user = {
+			login: loginRef.current.value,
+			password: passwordRef.current.value,
+			confirmPassword: confirmPasswordRef.current.value,
+		};
 
-		if (login === "") {
-			setFeedback({
-				icon: "bi bi-exclamation-triangle",
-				message: "Preencha o campo o login!",
-				color: "text-danger",
-			});
-			setLoading(false);
-		} else if (password === "") {
-			setFeedback({
-				icon: "bi bi-exclamation-triangle",
-				message: "Preencha o campo de senha!",
-				color: "text-danger",
-			});
-			setLoading(false);
-		} else if (confirmPassword === "") {
-			setFeedback({
-				icon: "bi bi-exclamation-triangle",
-				message: "Preencha o campo de confirmação de senha!",
-				color: "text-danger",
-			});
-			setLoading(false);
-		} else {
-			if (password != confirmPassword) {
+		schema.validate(user)
+			.then(user => {
+				testSenhas(user.password, user.confirmPassword)
+				setFeedback(feedbackDefault)
+				setShowModal(true)
+			}).catch((err: yup.ValidationError) => {
 				setFeedback({
 					icon: "bi bi-x-octagon-fill",
-					message: "Senhas não correspondentes!",
+					message: err.errors,
 					color: "text-danger",
 				});
 				setLoading(false);
-			} else {
-				setFeedback(feedbackDefault);
-				setShowModal(true);
-			}
-		}
+			})
 	}, [loginRef, passwordRef, confirmPasswordRef]);
 
 	const handleConfirm = useCallback(() => {
@@ -90,7 +91,7 @@ const FormCadastroLogin: React.FC = () => {
 			})
 			.then((newLogin) => {
 				if (newLogin.status === 201) {
-					route.push(`/${tipoRef.current}`);
+					route.push(`/cadastro/${tipoRef.current}`);
 				} else {
 					setFeedback({
 						icon: "bi bi-exclamation-diamond-fill",
@@ -195,22 +196,23 @@ const FormCadastroLogin: React.FC = () => {
 								Loading...
 							</Button>
 						) : (
-							<div className="container">
+							<div className="container d-flex justify-content-between">
 								<Link href="/">
 									<a
-										className="btn btn-outline-danger"
-										style={{
-											width: "47%",
-											marginRight: "calc(100% - 94%)",
-										}}
+										className="btn btn-outline-danger col-5"
+										// style={{
+										// 	width: "47%",
+										// 	marginRight: "calc(100% - 94%)",
+										// }}
 									>
 										<i className="bi bi-arrow-left"></i>{" "}
 										Voltar
 									</a>
 								</Link>
 								<Button
+									className="col-5"
 									variant="warning"
-									style={{ width: "47%" }}
+									// style={{ width: "47%" }}
 									onClick={handleContinuar}
 								>
 									Continuar{" "}
