@@ -6,7 +6,7 @@ import { PropsWithChildren } from "react";
 import { Button, Collapse } from "react-bootstrap";
 
 interface ILayoutProps {
-	links: string[];
+	links?: string[];
 	menu?: boolean
 }
 
