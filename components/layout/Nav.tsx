@@ -1,21 +1,42 @@
 import { useState } from "react";
-import styles from "/styles/Nav.module.css"
+import { Button, Collapse } from "react-bootstrap";
+import styles from "/styles/Nav.module.css";
 
-interface Props{
-    links: string[]
-    lateral?: boolean
+interface Props {
+	links: string[];
 }
 
-const Nav: React.FC<Props> = ({ links, lateral }) => {
+const Nav: React.FC<Props> = ({ links }) => {
 	const [linksProps, setLinksProps] = useState<string[]>(links);
-	
-    return (
-        <nav className={lateral ? styles.NavLateral : styles.NavTopo}>
-            {links.map(link => {
-                return <a key={link} className={styles.link}>{link}</a>
-            })}
-        </nav>
-    )
+	const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+	return (
+		<>
+			<Collapse
+				in={menuOpen}
+				dimension={"width"}
+                timeout={1}
+				className={styles.container}
+			>
+				<nav className={styles.Nav}>
+					{links.map((link) => {
+						return (
+							<a key={link} className={styles.link}>
+								{link}
+							</a>
+						);
+					})}
+				</nav>
+			</Collapse>
+			<Button
+				className={menuOpen ? styles.menuOpen : styles.menuClosed}
+				variant="warning"
+                onClick={() => setMenuOpen(!menuOpen)}
+			>
+				{!menuOpen && "Menu"}<i className="bi bi-list"></i>
+			</Button>
+		</>
+	);
 };
 
 export default Nav;

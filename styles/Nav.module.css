@@ -1,17 +1,6 @@
-.NavTopo{
-    /* Cores */
-    background: linear-gradient(to right, rgb(240, 152, 25), rgb(237, 222, 93));
-    /* Tamanho */
-    height: 3rem;
-    /* Sombras */
-    box-shadow: #222 0.5rem 0.5rem 2rem;
-    /* FlexBox */
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.NavLateral{
+.container{
+    /* Posição */
+    position: relative;
     /* Tamanho */
     width: 20%;
     height: 100%;
@@ -19,6 +8,9 @@
     background: rgba(240, 150, 25, 0.849);
     /* Sombras */
     box-shadow: #222 0.5rem 0.5rem 2rem;
+}
+
+.Nav{
     /* FlexBox */
     display: flex;
     flex-direction: column;
@@ -26,7 +18,7 @@
     justify-content: flex-start;
 }
 
-.NavLateral .link {
+.Nav .link {
     /* Cores */
     background-color: #222;
     color: aliceblue;
@@ -43,24 +35,42 @@
     width: 95%;
 }
 
-.NavTopo .link {
-    /* Cores */
-    background-color: #222;
-    color: aliceblue;
-    /* Margins */
-    margin: 0.1rem;
-    padding: 0.5rem;
+button.menuOpen {
+    /* Posição */
+    position: absolute;
+    left: 7rem;
     /* Bordas */
-    border-radius: 0.2rem;
-    /* Sombras */
-    box-shadow: #222 0.2rem 0.2rem 2rem;
+    border-radius: 1rem;
+    border: rgba(240, 150, 25, 0.849);
+    /* Cores */
+    background-color: rgb(240, 150, 25);
+    /* Margins */
+    margin-top: 0.5rem;
     /* Fontes */
-    font-weight: lighter;
+    font-size: 1rem;
+}
+
+button.menuClosed {
+    /* Posição */
+    position: absolute;
+    left: -0.8rem;
+    /* Bordas */
+    border-radius: 1rem;
+    border: rgba(240, 150, 25, 0.849);
+    /* Cores */
+    background-color: rgb(240, 150, 25);
+    /* Margins */
+    margin-top: 0.5rem;
+    padding-left: 1.2rem;
+    /* Fontes */
+    font-size: 1rem;
 }
 
 a.link{
     /* cursor */
     cursor: pointer;
+    /* Transformação */
+    text-decoration: none;
 }
 
 a.link:hover{

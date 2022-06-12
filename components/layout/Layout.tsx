@@ -2,30 +2,24 @@ import styles from "/styles/Layout.module.css";
 import Footer from "./Footer";
 import Header from "./Header";
 import Nav from "./Nav";
+import { PropsWithChildren } from "react";
+import { Button, Collapse } from "react-bootstrap";
 
-interface INav {
-	lateral: boolean;
+interface ILayoutProps {
+	links: string[];
+	menu?: boolean
 }
 
-interface Props {
-	menu?: INav;
-	children: any;
-}
-
-const Layout: React.FC<Props> = ({ menu, children }) => {
+const Layout: React.FC<PropsWithChildren<ILayoutProps>> = ({
+	children,
+	links,
+	menu
+}) => {
 	return (
 		<div className={styles.Layout}>
 			<Header />
-			<div
-				className={styles.container}
-				style={{ flexDirection: menu?.lateral ? "row" : "column" }}
-			>
-				{menu && (
-					<Nav
-						links={["Home", "Menu 1", "Menu 2", "Menu 3"]}
-						lateral={menu?.lateral}
-					/>
-				)}
+			<div className={styles.container} style={{ flexDirection: "row" }}>
+				{menu && <Nav links={[...links]} />}
 				{children}
 			</div>
 			<Footer />

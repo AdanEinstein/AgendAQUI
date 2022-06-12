@@ -6,6 +6,7 @@ import Link from "next/link";
 import FeedbackText, { IFeedback } from "../utils/FeedbackText";
 import { profileEnv } from "../../auth/baseUrl";
 import * as yup from "yup";
+import { useRouter } from "next/router";
 
 yup.setLocale({
 	mixed: {
@@ -27,6 +28,7 @@ const feedbackDefault = {
 };
 
 const FormLogin: React.FC = () => {
+	const route = useRouter()
 	const [feedback, setFeedback] = useState<IFeedback>(feedbackDefault);
 	const [loading, setLoading] = useState<boolean>(false);
 	const loginRef = useRef<HTMLInputElement>();
@@ -55,6 +57,7 @@ const FormLogin: React.FC = () => {
 								color: "text-success",
 							});
 							setLoading(false);
+							route.push("home")
 						} else {
 							setFeedback({
 								icon: "bi bi-exclamation-diamond-fill",
