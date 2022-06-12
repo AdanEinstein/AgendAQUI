@@ -3,6 +3,7 @@
     position: relative;
     /* Tamanho */
     width: 20%;
+    min-width: 8rem;
     height: 100%;
     /* Cores */
     background: rgba(240, 150, 25, 0.849);
@@ -38,7 +39,7 @@
 button.menuOpen {
     /* Posição */
     position: absolute;
-    left: 7rem;
+    right: calc(100% - 19%);
     /* Bordas */
     border-radius: 1rem;
     border: rgba(240, 150, 25, 0.849);
@@ -48,6 +49,25 @@ button.menuOpen {
     margin-top: 0.5rem;
     /* Fontes */
     font-size: 1rem;
+    width: 4rem;
+}
+
+@media (max-width: 800px) {
+    button.menuOpen {
+        /* Posição */
+        position: absolute;
+        right: calc(100% - 10rem);
+        /* Bordas */
+        border-radius: 1rem;
+        border: rgba(240, 150, 25, 0.849);
+        /* Cores */
+        background-color: rgb(240, 150, 25);
+        /* Margins */
+        margin-top: 0.5rem;
+        /* Fontes */
+        font-size: 1rem;
+        width: 4rem;
+    }
 }
 
 button.menuClosed {
