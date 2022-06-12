@@ -5,7 +5,7 @@ const Home: React.FC = () => {
     return (
         <Layout links={["Home", "Agenda"]}>
             <Card>
-                
+
             </Card>
         </Layout>
     )

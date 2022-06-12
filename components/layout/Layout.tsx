@@ -7,19 +7,17 @@ import { Button, Collapse } from "react-bootstrap";
 
 interface ILayoutProps {
 	links?: string[];
-	menu?: boolean
 }
 
 const Layout: React.FC<PropsWithChildren<ILayoutProps>> = ({
 	children,
 	links,
-	menu
 }) => {
 	return (
 		<div className={styles.Layout}>
 			<Header />
 			<div className={styles.container} style={{ flexDirection: "row" }}>
-				{menu && <Nav links={[...links]} />}
+				{links && <Nav links={[...links]} />}
 				{children}
 			</div>
 			<Footer />
