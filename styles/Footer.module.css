@@ -3,7 +3,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center; 
-    padding: 20px;
+    padding: 0 20px;
     /* Cores */
     background: linear-gradient(to right, rgb(240, 152, 25), rgb(237, 222, 93));
     color: #222;
