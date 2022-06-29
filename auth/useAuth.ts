@@ -3,22 +3,20 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { profileEnv } from "./baseUrl";
 
-export default function useAuth() {
-	const [auth, setAuth] = useState<boolean>(false);
+export default async function useAuth() {
+    const route = useRouter()
+	const token = localStorage.getItem("token");
 
 	useEffect(() => {
-		const token = localStorage.getItem("token");
 		axios
-			.get(`${profileEnv.baseUrl}/validtoken`, {
+			.get(`${profileEnv.baseUrlJava}/api/login/token`, {
 				headers: { Authorization: `Bearer ${token}` },
 			})
 			.then(() => {
-                setAuth(true)
-            })
+				return;
+			})
 			.catch(() => {
-                setAuth(false)
-            });
+				route.push("/not_found");
+			});
 	}, []);
-
-    return auth
 }
