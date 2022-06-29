@@ -9,8 +9,8 @@ export default function useAuth() {
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		axios
-			.get(`${profileEnv.baseUrl}/validToken`, {
-				headers: { Authorization: token },
+			.get(`${profileEnv.baseUrl}/validtoken`, {
+				headers: { Authorization: `Bearer ${token}` },
 			})
 			.then(() => {
                 setAuth(true)

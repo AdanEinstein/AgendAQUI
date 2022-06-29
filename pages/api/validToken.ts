@@ -2,11 +2,30 @@ import axios, { AxiosError } from "axios";
 import { NextApiResponse } from "next";
 import { NextApiRequest } from "next";
 import { profileEnv } from "../../auth/baseUrl";
+import Cors from 'cors'
 
-export default function ValidToken(
+const cors = Cors({
+  methods: ['GET', 'HEAD'],
+})
+
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result)
+      }
+
+      return resolve(result)
+    })
+  })
+}
+
+export default async function ValidToken(
 	request: NextApiRequest,
 	response: NextApiResponse
 ) {
+	await runMiddleware(request, response, cors)
+
 	axios
 		.get(`${profileEnv.baseUrlJava}/login/token`, {
 			headers: { Authorization: request.headers.authorization },
