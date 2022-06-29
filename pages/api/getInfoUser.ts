@@ -8,16 +8,19 @@ export default function GetInfoUser(
 ) {
 	const login = request.query.login;
 	const senha = request.query.senha;
-	const token = request.headers.authorization;
-	axios.get(
-		`${profileEnv.baseUrlJava}/loginID?login=${login}&senha=${senha}`,
-		{ headers: { Authorization: token } }
-	).then(data => response.status(200).json(data))
-    .catch((err: AxiosError) => {
-        if (err.response.status === 403) {
-            response.status(404).send("Login inválido!")
-        } else {
-            response.status(500).send("Estamos com um problema, tente mais tarde!")
-        }
-    });
+	axios
+		.get(
+			`${profileEnv.baseUrlJava}/loginID?login=${login}&senha=${senha}`,
+			{ headers: { Authorization: request.headers.authorization } }
+		)
+		.then((data) => response.status(200).json(data))
+		.catch((err: AxiosError) => {
+			if (err.response.status === 403) {
+				response.status(404).send("Login inválido!");
+			} else {
+				response
+					.status(500)
+					.send("Estamos com um problema, tente mais tarde!");
+			}
+		});
 }

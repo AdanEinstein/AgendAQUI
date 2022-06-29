@@ -7,13 +7,12 @@ export default function ValidToken(
 	request: NextApiRequest,
 	response: NextApiResponse
 ) {
-	const token = request.headers.authorization
 	axios
 		.get(`${profileEnv.baseUrlJava}/login/token`, {
-			headers: { Authorization: token},
+			headers: { Authorization: request.headers.authorization },
 		})
-		.then((res) => {
-			response.status(200).send(res.data);
+		.then(() => {
+			response.status(200).send("Token Ok!");
 		})
 		.catch((err: AxiosError) => {
 			if (err.response.status === 403) {
