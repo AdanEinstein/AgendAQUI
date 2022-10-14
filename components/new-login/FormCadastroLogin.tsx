@@ -20,10 +20,10 @@ const feedbackDefault = {
 yup.setLocale({
 	mixed: {
 		required(params) {
-			return `${params.path} não foi preenchido!`
+			return `${params.path} não foi preenchido!`;
 		},
-	}
-})
+	},
+});
 
 const schema = yup.object().shape({
 	confirmPassword: yup.string().required().label("Confirmação de senha"),
@@ -66,49 +66,95 @@ const FormCadastroLogin: React.FC = () => {
 			confirmPassword: confirmPasswordRef.current.value,
 		};
 
-		schema.validate(user)
-			.then(user => {
-				testSenhas(user.password, user.confirmPassword)
-				setFeedback(feedbackDefault)
-				setShowModal(true)
-			}).catch((err: yup.ValidationError) => {
+		schema
+			.validate(user)
+			.then((user) => {
+				testSenhas(user.password, user.confirmPassword);
+				setFeedback(feedbackDefault);
+				setShowModal(true);
+			})
+			.catch((err: yup.ValidationError) => {
 				setFeedback({
 					icon: "bi bi-x-octagon-fill",
 					message: err.errors,
 					color: "text-danger",
 				});
 				setLoading(false);
-			})
+			});
 	}, [loginRef, passwordRef, confirmPasswordRef]);
 
-	const handleConfirm = useCallback(() => {
+	const handleConfirm = useCallback(async () => {
 		setShowModal(false);
 		setLoading(true);
-		axios
-			.post(`${profileEnv.baseUrl}/cadastralogin`, {
-				login: loginRef.current.value,
-				password: passwordRef.current.value,
-			})
-			.then((newLogin) => {
-				if (newLogin.status === 201) {
+		const user = {
+			login: loginRef.current.value,
+			password: passwordRef.current.value,
+		};
+		try {
+			const newLogin = await axios.post(
+				`${profileEnv.baseUrl}/cadastralogin`,
+				user
+			);
+			if (newLogin.status === 201) {
+				try {
+					const token = await axios.post(
+						`${profileEnv.baseUrl}/gettoken`,
+						user
+					);
+					if (token.status === 200) {
+						localStorage.setItem("token", token.data);
+						const data = await axios.post(
+							`${profileEnv.baseUrl}/getuser`,
+							{
+								login: loginRef.current.value,
+								senha: passwordRef.current.value,
+							},
+							{
+								headers: {
+									Authorization: `Bearer ${token.data}`,
+								},
+							}
+						);
+						localStorage.setItem("user", JSON.stringify(data.data));
+					} else {
+						setFeedback({
+							icon: "bi bi-exclamation-diamond-fill",
+							message: token.data,
+							color: "text-warning",
+						});
+						setLoading(false);
+					}
+					setFeedback({
+						icon: "bi bi-check-circle",
+						message: "Login válido",
+						color: "text-success",
+					});
+					setLoading(false);
 					route.push(`/cadastro/${tipoRef.current}`);
-				} else {
+				} catch (err) {
 					setFeedback({
 						icon: "bi bi-exclamation-diamond-fill",
-						message: newLogin.data,
+						message: "Informações inválidas!",
 						color: "text-warning",
 					});
 					setLoading(false);
 				}
-			})
-			.catch((err: AxiosError) => {
+			} else {
 				setFeedback({
 					icon: "bi bi-exclamation-diamond-fill",
-					message: err.response.data,
+					message: newLogin.data,
 					color: "text-warning",
 				});
 				setLoading(false);
+			}
+		} catch (err) {
+			setFeedback({
+				icon: "bi bi-exclamation-diamond-fill",
+				message: err.response.data,
+				color: "text-warning",
 			});
+			setLoading(false);
+		}
 	}, []);
 
 	useEffect(() => {

@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Button, FloatingLabel, Form } from "react-bootstrap";
 import styles from "./FormCadastroPrestador.module.css";
 import * as yup from "yup";
 import FeedbackText, { IFeedback } from "../utils/FeedbackText";
+import axios, { AxiosError } from "axios";
+import { profileEnv } from "../../auth/baseUrl";
+import { useRouter } from "next/router";
 
 yup.setLocale({
 	mixed: {
@@ -14,7 +17,7 @@ yup.setLocale({
 		matches(params) {
 			return `${params.path} incorreto!`;
 		},
-		email: "E-mail inválido!"
+		email: "E-mail inválido!",
 	},
 });
 
@@ -42,8 +45,12 @@ const schema = yup.object().shape({
 });
 
 const FormCadastroPrestador: React.FC = () => {
+	const route = useRouter()
 	const [loading, setLoading] = useState<boolean>(false);
 	const [feedback, setFeedback] = useState<IFeedback>(feedbackDefault);
+
+	const [cpfj, setCpfj] = useState<string>("");
+	const [telefone, setTelefone] = useState<string>("");
 
 	const nomeRef = useRef<HTMLInputElement>(null);
 	const cpfjRef = useRef<HTMLInputElement>(null);
@@ -67,6 +74,36 @@ const FormCadastroPrestador: React.FC = () => {
 					message: "Login válido",
 					color: "text-success",
 				});
+				axios
+					.post(`${profileEnv.baseUrl}/cadastraprestador`, {
+						nome: nomeRef.current.value,
+						cpfj: cpfjRef.current.value,
+						telefone: telefoneRef.current.value,
+						descricao: "",
+						email: emailRef.current.value,
+						paginaFacebook: "",
+						loginid: typeof JSON.parse(localStorage.getItem('user'))?.login == 'object' ? null : JSON.parse(localStorage.getItem('user'))?.id 
+					}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}})
+					.then((newPrestador) => {
+						if (newPrestador.status === 201) {
+							route.push('/')
+						} else {
+							setFeedback({
+								icon: "bi bi-exclamation-diamond-fill",
+								message: newPrestador.data,
+								color: "text-warning",
+							});
+							setLoading(false);
+						}
+					})
+					.catch((err: AxiosError) => {
+						setFeedback({
+							icon: "bi bi-exclamation-diamond-fill",
+							message: err.response.data,
+							color: "text-warning",
+						});
+						setLoading(false);
+					});
 				setLoading(false);
 			})
 			.catch((err: yup.ValidationError) => {
@@ -79,6 +116,40 @@ const FormCadastroPrestador: React.FC = () => {
 			});
 	}, []);
 
+	const handleFormatCpfj = useCallback(
+		(e: ChangeEvent) => {
+			let val = (e.target as HTMLInputElement).value.replace(/\D/g, "");
+			if (val.length <= 11) {
+				val = val.replace(/^(\d{3})(\d)/, "$1.$2");
+				val = val.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
+				val = val.replace(/\.(\d{3})(\d)/, ".$1-$2");
+			} else {
+				val = val.replace(/^(\d{2})(\d)/, "$1.$2");
+				val = val.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+				val = val.replace(/\.(\d{3})(\d)/, ".$1/$2");
+				val = val.replace(/(\d{4})(\d)/, "$1-$2");
+			}
+			if (val.length <= 18) setCpfj(val);
+		},
+		[cpfj]
+	);
+
+	const handleFormatTelefone = useCallback(
+		(e: ChangeEvent) => {
+			let val = (e.target as HTMLInputElement).value.replace(/\D/g, "");
+			if (val.length <= 11) {
+				val = val
+					.replace(/\D/g, "")
+					.replace(/(\d{2})(\d)/, "($1)$2")
+					.replace(/(\d{4})(\d)/, "$1-$2")
+					.replace(/(\d{4})-(\d)(\d{4})/, "$1$2-$3")
+					.replace(/(-\d{4})\d+?$/, "$1");
+				setTelefone(val);
+			}
+		},
+		[telefone]
+	);
+
 	return (
 		<>
 			<div className={styles.FormCadastroPrestador + " container"}>
@@ -87,7 +158,9 @@ const FormCadastroPrestador: React.FC = () => {
 						Olá prestador, preencha com seus dados para finalizarmos
 						seu cadastro
 					</h2>
-					<h2 className="d-md-none d-block">Finalizaremos logo, prestador!</h2>
+					<h2 className="d-md-none d-block">
+						Finalizaremos logo, prestador!
+					</h2>
 
 					<Form>
 						<FloatingLabel label="Nome" className="mb-3">
@@ -104,6 +177,8 @@ const FormCadastroPrestador: React.FC = () => {
 								placeholder="CPF ou CNPJ"
 								ref={cpfjRef}
 								disabled={loading}
+								value={cpfj}
+								onChange={handleFormatCpfj}
 							/>
 						</FloatingLabel>
 						<FloatingLabel label="Telefone" className="mb-3">
@@ -112,12 +187,11 @@ const FormCadastroPrestador: React.FC = () => {
 								placeholder="Telefone"
 								ref={telefoneRef}
 								disabled={loading}
+								value={telefone}
+								onChange={handleFormatTelefone}
 							/>
 						</FloatingLabel>
-						<FloatingLabel
-							label="E-mail"
-							className="mb-3"
-						>
+						<FloatingLabel label="E-mail" className="mb-3">
 							<Form.Control
 								type="email"
 								placeholder="E-mail"

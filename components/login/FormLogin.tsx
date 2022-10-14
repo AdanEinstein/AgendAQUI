@@ -51,13 +51,19 @@ const FormLogin: React.FC = () => {
 					.then((token) => {
 						if (token.status === 200) {
 							localStorage.setItem("token", token.data);
-							setFeedback({
-								icon: "bi bi-check-circle",
-								message: "Login válido",
-								color: "text-success",
-							});
-							setLoading(false);
-							route.push("home")
+							axios.post(`${profileEnv.baseUrl}/getuser`, {login: user.login, senha: user.password}, {
+								headers: {Authorization: `Bearer ${token.data}`}
+							}).then(data => {
+								localStorage.setItem("user", JSON.stringify(data.data))
+							}).then(() => {
+								setFeedback({
+									icon: "bi bi-check-circle",
+									message: "Login válido",
+									color: "text-success",
+								});
+								setLoading(false);
+								route.push("/home")
+							})
 						} else {
 							setFeedback({
 								icon: "bi bi-exclamation-diamond-fill",
@@ -87,7 +93,6 @@ const FormLogin: React.FC = () => {
 	}, [loginRef, passwordRef]);
 
 	useEffect(() => {
-		localStorage.removeItem("token");
 		loginRef.current.focus();
 	}, []);
 

@@ -4,12 +4,13 @@ import useAuth from "../auth/auth"
 import Card from "../components/layout/Card"
 import Layout from "../components/layout/Layout"
 
-const NotFound: React.FC = () => {
+const Disconnected: React.FC = () => {
     const route = useRouter()
     return (
         <Layout>
             <Card className="d-flex flex-column align-items-center justify-content-around">
-                <h1 className="display-1">404 - Page not found</h1>
+                <h1 className="display-1">Session disconnected</h1>
+                <p>Por favor, faça o login novamente para ter o acesso novamente!</p>
                 <Button
                     variant="warning"
                     size={'lg'}
@@ -20,4 +21,4 @@ const NotFound: React.FC = () => {
     )
 }
 
-export default NotFound
+export default Disconnected

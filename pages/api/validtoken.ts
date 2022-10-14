@@ -27,7 +27,7 @@ export default async function ValidToken(
 	await runMiddleware(request, response, cors)
 
 	axios
-		.head(`${profileEnv.baseUrlJava}/login/token`, {
+		.head(`${profileEnv.baseUrlJava}/api/login/token`, {
 			headers: { Authorization: request.headers.authorization },
 		})
 		.then(() => {

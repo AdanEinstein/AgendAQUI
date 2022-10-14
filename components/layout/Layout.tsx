@@ -1,12 +1,12 @@
 import styles from "/styles/Layout.module.css";
 import Footer from "./Footer";
 import Header from "./Header";
-import Nav from "./Nav";
+import Nav, { ILink } from "./Nav";
 import { PropsWithChildren } from "react";
 import { Button, Collapse } from "react-bootstrap";
 
 interface ILayoutProps {
-	links?: string[];
+	links?: ILink[];
 }
 
 const Layout: React.FC<PropsWithChildren<ILayoutProps>> = ({
