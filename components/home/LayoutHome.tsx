@@ -44,7 +44,7 @@ const LayoutHome: React.FC = () => {
 			</div>
 		</MyModal>
 	) : (
-		(typeUser == "cliente" || typeUser == "prestador" || typeUser == undefined) && (
+		(typeUser == "cliente" || typeUser == "prestador") && (
 			<Layout>
 				<Nav links={links} />
 				<Card className="d-flex flex-column justify-content-center align-items-center">
