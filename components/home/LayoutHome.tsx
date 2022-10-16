@@ -13,10 +13,7 @@ const LayoutHome: React.FC = () => {
 	const { links, typeUser, user, setAtualizar } = useUser();
     useEffect(() => {
 		setAtualizar(true);
-		if(!typeUser){
-			route.push("/disconnected")
-		}
-	}, [typeUser]);
+	}, []);
 	return typeUser == "login" ? (
 		<MyModal
 			title="Você precisa escolher..."
@@ -47,7 +44,7 @@ const LayoutHome: React.FC = () => {
 			</div>
 		</MyModal>
 	) : (
-		(typeUser == "cliente" || typeUser == "prestador") && (
+		(typeUser == "cliente" || typeUser == "prestador" || typeUser == undefined) && (
 			<Layout>
 				<Nav links={links} />
 				<Card className="d-flex flex-column justify-content-center align-items-center">
