@@ -16,7 +16,7 @@ const LayoutHome: React.FC = () => {
 		if(!typeUser){
 			route.push("/disconnected")
 		}
-	}, []);
+	}, [typeUser]);
 	return typeUser == "login" ? (
 		<MyModal
 			title="Você precisa escolher..."
