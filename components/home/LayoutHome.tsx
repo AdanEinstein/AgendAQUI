@@ -13,6 +13,9 @@ const LayoutHome: React.FC = () => {
 	const { links, typeUser, user, setAtualizar } = useUser();
     useEffect(() => {
 		setAtualizar(true);
+		if(!typeUser){
+			route.push("/disconnected")
+		}
 	}, []);
 	return typeUser == "login" ? (
 		<MyModal
