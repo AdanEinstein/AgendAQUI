@@ -9,9 +9,9 @@ import MyModal from "../layout/Modal";
 import Nav from "../layout/Nav";
 
 const LayoutHome: React.FC = () => {
-	const route = useRouter();
+    const route = useRouter()
 	const { links, typeUser, user, setAtualizar } = useUser();
-	useEffect(() => {
+    useEffect(() => {
 		setAtualizar(true);
 	}, []);
 	return typeUser == "login" ? (
@@ -44,32 +44,35 @@ const LayoutHome: React.FC = () => {
 			</div>
 		</MyModal>
 	) : (
-		<Layout>
-			<Nav links={links} />
-			<Card className="d-flex flex-column justify-content-center align-items-center">
-				<h1 className="display-4 mb-4 d-md-block d-none">
-					Seja bem vindo de volta!
-				</h1>
-				<h1 className="display-4 mb-4 d-md-none d-block">
-					Seja bem vindo!
-				</h1>
-				<p className="fs-3 d-md-block d-none">
-					Olá {typeUser}, {(user as ICliente | IPrestador).nome}{" "}
-				</p>
-				<p className="fs-3 d-md-none d-block">
-					{(user as ICliente | IPrestador).nome}
-				</p>
-				<p className="fs-3 d-md-block d-none">
-					Selecione o{" "}
-					<span className="text-warning fw-bold">MENU</span> para
-					navegar{" "}
-				</p>
-				<p className="fs-3 d-md-none d-block">
-					Clique em <span className="text-warning fw-bold">MENU</span>{" "}
-					para navegar{" "}
-				</p>
-			</Card>
-		</Layout>
+		(typeUser == "cliente" || typeUser == "prestador") && (
+			<Layout>
+				<Nav links={links} />
+				<Card className="d-flex flex-column justify-content-center align-items-center">
+					<h1 className="display-4 mb-4 d-md-block d-none">
+						Seja bem vindo de volta!
+					</h1>
+					<h1 className="display-4 mb-4 d-md-none d-block">
+						Seja bem vindo!
+					</h1>
+					<p className="fs-3 d-md-block d-none">
+						Olá {typeUser}, {(user as ICliente | IPrestador).nome}{" "}
+					</p>
+					<p className="fs-3 d-md-none d-block">
+						{(user as ICliente | IPrestador).nome}
+					</p>
+					<p className="fs-3 d-md-block d-none">
+						Selecione o{" "}
+						<span className="text-warning fw-bold">MENU</span> para
+						navegar{" "}
+					</p>
+					<p className="fs-3 d-md-none d-block">
+						Clique em{" "}
+						<span className="text-warning fw-bold">MENU</span> para
+						navegar{" "}
+					</p>
+				</Card>
+			</Layout>
+		)
 	);
 };
 
