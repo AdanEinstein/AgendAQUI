@@ -18,7 +18,7 @@ export default function GetUser(
 		.then((user) => user.data)
 		.then((data) => response.status(200).json(data))
 		.catch((err: AxiosError) => {
-			if (err.response.status === 403) {
+			if (err.response.status < 500) {
 				response.status(404).send("Usuário inexistente");
 			} else {
 				response

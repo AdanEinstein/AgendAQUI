@@ -1,6 +1,7 @@
 export interface ILogin {
     id: number,
     login: string,
+    oldpassword?: string,
     password: string,
 }
 

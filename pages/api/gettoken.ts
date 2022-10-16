@@ -14,7 +14,7 @@ export default function GetToken(
 	}).then(token => token.data)
 	  .then(data => response.status(200).json(data))
 	  .catch((err: AxiosError) => {
-		  if (err.response.status === 403) {
+		  if (err.response.status < 500) {
 			  response.status(404).send("Login Inválido")
 		  } else {
 			  response.status(500).send("Estamos com um problema, tente mais tarde!")

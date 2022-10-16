@@ -5,7 +5,7 @@ import { profileEnv } from "../../auth/baseUrl";
 import Cors from 'cors'
 
 const cors = Cors({
-  methods: ['GET', 'HEAD'],
+  methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
 })
 
 function runMiddleware(req, res, fn) {
@@ -34,7 +34,7 @@ export default async function ValidToken(
 			response.status(200).send("Token Ok!");
 		})
 		.catch((err: AxiosError) => {
-			if (err.response.status === 403) {
+			if (err.response.status < 500) {
 				response.status(404).send("Token Expirado!");
 			} else {
 				response
