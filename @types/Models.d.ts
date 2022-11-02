@@ -8,7 +8,7 @@ export interface ILogin {
 export interface IProduto {
     id: number,
     descricao: string,
-    preco: number
+    preco: string | number
 }
 
 export interface ICliente {

@@ -1,0 +1,7 @@
+.Week {
+    border-radius: 1rem 1rem 0 0;
+	background-color: aliceblue;
+	color: #222;
+	font-weight: bolder;
+    grid-column: 1 / 8;
+}

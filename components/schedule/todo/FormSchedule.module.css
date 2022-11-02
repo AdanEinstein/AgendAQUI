@@ -1,0 +1,21 @@
+.Lista {
+    max-height: calc(100vh - 600px);
+    overflow-y: scroll;
+}
+
+.Lista::-webkit-scrollbar {
+  width: 12px;
+}
+
+.Lista::-webkit-scrollbar-track {
+  background-color: #222;
+  border-radius: 100px;
+}
+
+.Lista::-webkit-scrollbar-thumb {
+  border-radius: 100px;
+  border: 6px solid rgba(0, 0, 0, 0.18);
+  border-left: 0;
+  border-right: 0;
+  background-color: #ffffff;
+}

@@ -9,8 +9,16 @@ const Disconnected: React.FC = () => {
     return (
         <Layout>
             <Card className="d-flex flex-column align-items-center justify-content-around">
-                <h1 className="display-1">Session disconnected</h1>
-                <p>Por favor, faça o login novamente para ter o acesso novamente!</p>
+                <h1 className="display-2 d-none d-md-block">Session disconnected</h1>
+                <h1 className="display-4 d-md-none d-block">Session disconnected</h1>
+                <div className="fw-bold text-center d-none d-md-block fs-3">
+                    <p>Por favor, faça o login novamente </p>
+                    <p>para ter o acesso novamente!</p>
+                </div>
+                <div className="fw-bold text-center d-md-none d-block">
+                    <p>Por favor, faça o login novamente </p>
+                    <p>para ter o acesso novamente!</p>
+                </div>
                 <Button
                     variant="warning"
                     size={'lg'}

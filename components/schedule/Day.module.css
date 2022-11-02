@@ -1,0 +1,23 @@
+.Day{
+    position: relative;
+    font-size: 1.2rem;
+    border: 1px solid #222;
+    cursor: pointer;
+}
+
+.Day:hover{
+    background-color: #4a4a4a;
+    color: aliceblue;
+    font-weight: bolder;
+}
+
+.selected{
+    background-color: aliceblue;
+    color: #222;
+}
+
+.month{
+    background-color: #00000069;
+    color: aliceblue;
+    cursor: default;
+}

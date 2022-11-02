@@ -9,7 +9,8 @@ const NotFound: React.FC = () => {
     return (
         <Layout>
             <Card className="d-flex flex-column align-items-center justify-content-around">
-                <h1 className="display-1">404 - Page not found</h1>
+                <h1 className="display-2 d-none d-md-block">404 - Page not found</h1>
+                <h1 className="ddisplay-4 d-md-none d-block">404 - Page not found</h1>
                 <Button
                     variant="warning"
                     size={'lg'}
