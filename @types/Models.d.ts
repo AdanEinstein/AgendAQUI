@@ -6,7 +6,7 @@ export interface ILogin {
 }
 
 export interface IProduto {
-    id: number,
+    id: number | string,
     descricao: string,
     preco: string | number
 }

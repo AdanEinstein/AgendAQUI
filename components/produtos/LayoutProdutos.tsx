@@ -1,6 +1,18 @@
 import { useRouter } from "next/router";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Button, FloatingLabel, FormControl } from "react-bootstrap";
+import {
+	ChangeEvent,
+	MouseEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import {
+	Button,
+	ButtonGroup,
+	FloatingLabel,
+	FormControl,
+} from "react-bootstrap";
 import { ICliente, ILogin, IPrestador, IProduto } from "../../@types/Models";
 import { useUser } from "../../contexts/UserContext";
 import Card from "../layout/Card";
@@ -8,41 +20,115 @@ import Layout from "../layout/Layout";
 import Nav from "../layout/Nav";
 import styles from "./LayoutProduto.module.css";
 import shortid from "shortid";
-import { Container } from "react-bootstrap/lib/Tab";
+import * as yup from "yup";
+import FeedbackText, { IFeedback } from "../utils/FeedbackText";
+import MyModal from "../layout/Modal";
+import { profileEnv } from "../../auth/baseUrl";
+import axios from "axios";
+
+yup.setLocale({
+	mixed: {
+		required(params) {
+			return `${params.path} não foi preenchido`;
+		},
+	},
+	array: {
+		min(params) {
+			return `${params.path} deve ter no mínimo ${params.min} produto`;
+		},
+	},
+	string: {
+		max(params) {
+			return `${params.path} deve ter no máximo ${params.value} de tamanho`;
+		},
+		matches(params) {
+			return `${params.path} não pode ser R$ 0,00`;
+		},
+	},
+});
+
+const feedbackDefault = {
+	icon: "bi bi-info-circle",
+	message: "Digite corretamente as informações",
+	color: "text-white fw-bolder",
+};
+
+const schema = yup.object().shape({
+	produtos: yup
+		.array()
+		.min(1)
+		.of(
+			yup.object().shape({
+				preco: yup
+					.string()
+					.required()
+					.matches(/^(?!0,00)/gm)
+					.label("Preço"),
+				descricao: yup
+					.string()
+					.required()
+					.min(1)
+					.max(40)
+					.label("Descrição"),
+				id: yup.string().required().label("Id"),
+			})
+		)
+		.required()
+		.label("Lista de produtos"),
+});
 
 const LayoutProdutos: React.FC = () => {
 	const route = useRouter();
-	const { links, typeUser, user } = useUser();
-	const valorRef = useRef<HTMLInputElement>(null);
+	const { links, user, setAtualizar, typeUser } = useUser();
+	const [feedback, setFeedback] = useState<IFeedback>(feedbackDefault);
 	const [produtos, setProdutos] = useState<IProduto[]>([]);
+	const [showModal, setShowModal] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [alterado, setAlterado] = useState<boolean>(false);
+	const [deletados, setDeletados] = useState<number[]>([]);
 
 	useEffect(() => {
 		if ((user as IPrestador)?.produtos) {
-			setProdutos((user as IPrestador).produtos);
+			setProdutos(() => {
+				return (user as IPrestador).produtos.map((p) => {
+					return { ...p, preco: handlePrice(p.preco) };
+				});
+			});
 		}
-	}, [typeUser]);
+	}, [user, alterado]);
 
-	const handlePrice = (valor: string) => {
-		const val = valor.replace(/\D/g, "");
-		const valFixed = `${(parseInt(val) / 100).toFixed(2)}`;
+	useEffect(() => {
+		if (typeUser == "cliente" || typeUser == "login") {
+			route.push("/_error");
+		}
+	}, []);
+
+	const handlePrice = (valor: string | number): string => {
+		const val =
+			typeof valor == "string"
+				? valor.replace(/\D/g, "")
+				: valor.toString();
+		const valFixed =
+			typeof valor == "string"
+				? `${(parseInt(val) / 100).toFixed(2)}`
+				: `${parseInt(val).toFixed(2)}`;
 		if (val.length < 18) {
 			const result = valFixed
 				.replace(".", ",")
 				.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 			valor = isNaN(parseInt(val) / 100) ? "0,00" : result;
 		}
-		return valor;
+		return valor as string;
 	};
 
 	const handleAdd = () => {
+		setFeedback(feedbackDefault);
 		if (produtos.length === 0) {
-			setProdutos([
-				{ id: shortid(), descricao: undefined, preco: "0,00" },
-			]);
+			setProdutos([{ id: shortid(), descricao: "", preco: "0,00" }]);
 		} else {
 			setProdutos((oldProdutos) => [
 				...oldProdutos,
-				{ id: shortid(), descricao: undefined, preco: "0,00" },
+				{ id: shortid(), descricao: "", preco: "0,00" },
 			]);
 		}
 	};
@@ -51,6 +137,12 @@ const LayoutProdutos: React.FC = () => {
 		setProdutos((oldProdutos) => {
 			return oldProdutos.filter((p) => p.id !== produto.id);
 		});
+		if (typeof produto.id == "number") {
+			setDeletados((oldProdutos) => {
+				return [...oldProdutos, produto.id as number];
+			});
+			setAlterado(true);
+		}
 	};
 
 	const handleChange = (
@@ -74,110 +166,238 @@ const LayoutProdutos: React.FC = () => {
 				}
 			});
 		});
+		setAlterado(true);
 	};
+
+	const handleContinuar = useCallback(() => {
+		setLoading(true);
+		schema
+			.validate({ produtos })
+			.then(() => {
+				setFeedback(feedbackDefault);
+				setShowModal(true);
+			})
+			.catch((err: yup.ValidationError) => {
+				setFeedback({
+					icon: "bi bi-x-octagon-fill",
+					message: err.errors,
+					color: "text-danger",
+				});
+				setLoading(false);
+			});
+	}, [produtos]);
+
+	const handleConfirm = useCallback(async () => {
+		setShowModal(false);
+		setLoading(true);
+		try {
+			const data = {
+				produtos,
+				prestadorId: (user as IPrestador).id,
+				deletados,
+			};
+			const posted = await axios.post(
+				`${profileEnv.baseUrl}/setprodutos`,
+				data,
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem(
+							"token"
+						)}`,
+					},
+				}
+			);
+			setFeedback({
+				icon: "bi bi-check-circle",
+				message: posted.data,
+				color: "text-success fw-bolder",
+			});
+			const newUser = await localStorage.setItem(
+				"user",
+				JSON.stringify({ ...user, produtos: [...produtos] })
+			);
+			setLoading(false);
+			setAlterado(false);
+			setAtualizar(true);
+			setDeletados([]);
+		} catch (err) {
+			setFeedback({
+				icon: "bi bi-exclamation-diamond-fill",
+				message: err.response.data,
+				color: "text-warning fw-bolder",
+			});
+			setLoading(false);
+		}
+	}, [produtos]);
+
 	return (
-		<Layout>
-			<Nav links={links} />
-			<Card>
-				<div className="row h-100">
-					<div className="col-md-3 col-sm-1"></div>
-					<div className="col-md-6 col-sm-10 d-flex align-items-center justify-content-center">
-						{produtos.length !== 0 ? (
-							<div>
-								<div className="d-flex my-2 align-items-center">
-									<h4 className="flex-grow-1 text-white m-0">
-										Produtos:
-									</h4>
-									<Button onClick={() => handleAdd()}>
-										Adicionar
+		<>
+			<Layout>
+				<Nav links={links} />
+				<Card>
+					<div className="row h-100">
+						<div className="col-md-2 col-sm-1"></div>
+						<div className="col-md-8 col-sm-10 d-flex flex-column justify-content-center">
+							{produtos.length !== 0 ? (
+								<div>
+									<div className="d-flex flex-column">
+										<h4 className="flex-grow-1 text-white d-sm-none d-block ms-2">
+											Produtos:
+										</h4>
+										<div className="d-flex ms-2 mt-3 justify-content-center">
+											<h4 className="flex-grow-1 text-white d-none d-sm-block">
+												Produtos:
+											</h4>
+											<ButtonGroup>
+												{alterado ? (
+													<>
+														<Button
+															onClick={() =>
+																setAlterado(
+																	false
+																)
+															}
+															variant="warning"
+															disabled={loading}
+														>
+															Restaurar
+														</Button>
+														<Button
+															onClick={() =>
+																handleContinuar()
+															}
+															variant="success"
+															disabled={loading}
+														>
+															Confirmar
+														</Button>
+													</>
+												) : null}
+												<Button
+													onClick={() => handleAdd()}
+													disabled={loading}
+													className="me-1"
+												>
+													Adicionar
+												</Button>
+											</ButtonGroup>
+										</div>
+										<div className="ms-2">
+											<FeedbackText feedback={feedback} />
+										</div>
+									</div>
+									<div className={styles.Lista + " px-4"}>
+										{produtos?.map((current) => {
+											return (
+												<div
+													key={current.id}
+													className="d-flex flex-md-row flex-column my-4 p-3 bg-light bg-opacity-25 position-relative"
+													style={{
+														borderRadius: "1rem",
+													}}
+												>
+													<FloatingLabel
+														className="flex-grow-1 m-1 text-black"
+														label="Descrição"
+													>
+														<FormControl
+															value={
+																current.descricao
+															}
+															onChange={(
+																e: ChangeEvent
+															) =>
+																handleChange(
+																	e,
+																	current,
+																	"descricao"
+																)
+															}
+															disabled={loading}
+														/>
+													</FloatingLabel>
+													<FloatingLabel
+														className="flex-grow-1 m-1 text-black"
+														label="Valor R$"
+													>
+														<FormControl
+															value={
+																current.preco
+															}
+															onChange={(
+																e: ChangeEvent
+															) =>
+																handleChange(
+																	e,
+																	current,
+																	"preco"
+																)
+															}
+															disabled={loading}
+														/>
+													</FloatingLabel>
+													<Button
+														className="position-absolute"
+														variant="danger"
+														style={{
+															top: -10,
+															right: -10,
+														}}
+														onClick={() =>
+															handleTrash(current)
+														}
+														disabled={loading}
+													>
+														<i className="bi bi-trash-fill"></i>
+													</Button>
+												</div>
+											);
+										})}
+									</div>
+								</div>
+							) : (
+								<div className="d-flex flex-column">
+									<div
+										className="bg-black bg-gradient p-4 m-1 mb-3"
+										style={{ borderRadius: 15 }}
+									>
+										<h2 className="d-none d-md-block text-white">
+											<i className="bi bi-info-circle"></i>{" "}
+											Não encontramos nenhum produto
+										</h2>
+										<h2 className="d-md-none d-block text-white">
+											<i className="bi bi-info-circle"></i>{" "}
+											Nenhum produto
+										</h2>
+									</div>
+									<Button
+										variant="primary"
+										size="lg"
+										onClick={() => handleAdd()}
+									>
+										Adicionar novo
 									</Button>
 								</div>
-								<div className={styles.Lista + " px-4"}>
-									{produtos?.map((current) => {
-										return (
-											<div
-												key={current.id}
-												className="d-flex flex-md-row flex-column my-4 p-3 bg-light bg-opacity-25 position-relative"
-												style={{ borderRadius: "1rem" }}
-											>
-												<FloatingLabel
-													className="flex-grow-1 m-1 text-black"
-													label="Descrição"
-												>
-													<FormControl
-														value={current.descricao}
-														onChange={(
-															e: ChangeEvent
-														) =>
-															handleChange(
-																e,
-																current,
-																"descricao"
-															)
-														}
-													/>
-												</FloatingLabel>
-												<FloatingLabel
-													className="flex-grow-1 m-1 text-black"
-													label="Valor R$"
-												>
-													<FormControl
-														value={current.preco}
-														onChange={(
-															e: ChangeEvent
-														) =>
-															handleChange(
-																e,
-																current,
-																"preco"
-															)
-														}
-													/>
-												</FloatingLabel>
-												<Button
-													className="position-absolute"
-													variant="danger"
-													style={{ top: -10, right: -10 }}
-													onClick={() =>
-														handleTrash(current)
-													}
-												>
-													<i className="bi bi-trash-fill"></i>
-												</Button>
-											</div>
-										);
-									})}
-								</div>
-							</div>
-						) : (
-							<div className="d-flex flex-column">
-								<div
-									className="bg-black bg-gradient p-4 m-1 mb-3"
-									style={{ borderRadius: 15 }}
-								>
-									<h2 className="d-none d-md-block text-white">
-										<i className="bi bi-info-circle"></i> Não
-										encontramos nenhum produto
-									</h2>
-									<h2 className="d-md-none d-block text-white">
-										<i className="bi bi-info-circle"></i> Nenhum
-										produto
-									</h2>
-								</div>
-								<Button
-									variant="primary"
-									size="lg"
-									onClick={() => handleAdd()}
-								>
-									Adicionar novo
-								</Button>
-							</div>
-						)}
+							)}
+						</div>
+						<div className="col-md-2 col-sm-1"></div>
 					</div>
-					<div className="col-md-3 col-sm-1"></div>
-				</div>
-			</Card>
-		</Layout>
+				</Card>
+			</Layout>
+			{/* Modal */}
+			<MyModal
+				title="Confirmação da lista de produtos"
+				labelbutton="Confirmar"
+				show={showModal}
+				onHide={() => {
+					setShowModal(false);
+					setLoading(false);
+				}}
+				onConfirm={handleConfirm}
+			>
+				<h4>Deseja confirmar os dados?</h4>
+			</MyModal>
+		</>
 	);
 };
 
