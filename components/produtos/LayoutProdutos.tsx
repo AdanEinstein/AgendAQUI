@@ -56,7 +56,6 @@ const feedbackDefault = {
 const schema = yup.object().shape({
 	produtos: yup
 		.array()
-		.min(1)
 		.of(
 			yup.object().shape({
 				preco: yup
@@ -241,11 +240,18 @@ const LayoutProdutos: React.FC = () => {
 							{produtos.length !== 0 ? (
 								<div>
 									<div className="d-flex flex-column">
-										<h4 className="flex-grow-1 text-white d-sm-none d-block ms-2">
-											Produtos:
-										</h4>
+										{alterado && (
+											<h4 className="flex-grow-1 text-white d-sm-none d-block ms-2">
+												Produtos:
+											</h4>
+										)}
 										<div className="d-flex ms-2 mt-3 justify-content-center">
-											<h4 className="flex-grow-1 text-white d-none d-sm-block">
+											<h4
+												className={`flex-grow-1 text-white ${
+													alterado &&
+													"d-none d-sm-block"
+												}`}
+											>
 												Produtos:
 											</h4>
 											<ButtonGroup>
