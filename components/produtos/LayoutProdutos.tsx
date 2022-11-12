@@ -112,7 +112,7 @@ const LayoutProdutos: React.FC = () => {
 		const valFixed =
 			typeof valor == "string"
 				? `${(parseInt(val) / 100).toFixed(2)}`
-				: `${parseInt(val).toFixed(2)}`;
+				: `${parseFloat(val).toFixed(2)}`;
 		if (val.length < 18) {
 			const result = valFixed
 				.replace(".", ",")
@@ -198,7 +198,6 @@ const LayoutProdutos: React.FC = () => {
 				prestadorId: (user as IPrestador).id,
 				deletados: deletados.sort((a, b) => a - b),
 			};
-			console.warn(data)
 			const posted = await axios.post(
 				`${profileEnv.baseUrl}/setprodutos`,
 				data,
