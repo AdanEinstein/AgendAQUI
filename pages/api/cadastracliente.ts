@@ -27,12 +27,18 @@ export default function CadastrarLogin(
 		.then((newCliente) => newCliente.data)
 		.then((newClienteData) => response.status(201).json(newClienteData))
 		.catch((err: AxiosError) => {
-			if (err.response.status < 500) {
-				response.status(404).send("Token Expirado!");
+			if (err instanceof AxiosError) {
+				if (err.response.status < 500) {
+					response.status(404).send(err.response.data);
+				} else {
+					response
+						.status(500)
+						.send("Estamos com um problema, tente mais tarde!");
+				}
 			} else {
 				response
 					.status(500)
-					.send("Estamos com um problema, tente mais tarde!");
+					.send((err as Error).message);
 			}
 		});
 }

@@ -31,14 +31,34 @@ export default function CadastrarLogin(
 			).then(newLogin => newLogin.data)
 			 .then(newLoginData => response.status(201).json(newLoginData))
 			 .catch((err: AxiosError) => {
-				 if (err.response.status < 500) {
-					response.status(404).send(err.response.data)
-				 } else {
-					response.status(500).send("Estamos com um problema, tente mais tarde!")
-				 }				 
+				if (err instanceof AxiosError) {
+					if (err.response.status < 500) {
+						response.status(404).send(err.response.data);
+					} else {
+						response
+							.status(500)
+							.send("Estamos com um problema, tente mais tarde!");
+					}
+				} else {
+					response
+						.status(500)
+						.send((err as Error).message);
+				}			 
 			 });
 		})
 		.catch((err: AxiosError) => {
-			response.status(500).send("Estamos com um problema, tente mais tarde!")
+			if (err instanceof AxiosError) {
+				if (err.response.status < 500) {
+					response.status(404).send(err.response.data);
+				} else {
+					response
+						.status(500)
+						.send("Estamos com um problema, tente mais tarde!");
+				}
+			} else {
+				response
+					.status(500)
+					.send((err as Error).message);
+			}
 		});
 }

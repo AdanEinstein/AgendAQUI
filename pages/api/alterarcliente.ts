@@ -46,12 +46,18 @@ export default async function AlterarCliente(
 		});
 		response.status(200).send(data.data);
 	} catch (err) {
-		if (err.response.status < 500) {
-			response.status(404).send(err.response.data);
+		if (err instanceof AxiosError) {
+			if (err.response.status < 500) {
+				response.status(404).send(err.response.data);
+			} else {
+				response
+					.status(500)
+					.send("Estamos com um problema, tente mais tarde!");
+			}
 		} else {
 			response
 				.status(500)
-				.send("Estamos com um problema, tente mais tarde!");
+				.send((err as Error).message);
 		}
 	}
 }

@@ -42,7 +42,7 @@ yup.setLocale({
 			return `${params.path} deve ter no máximo ${params.value} de tamanho`;
 		},
 		matches(params) {
-			return `${params.path} não pode ser R$ 0,00`;
+			return `${params.path} não pode ser menor que R$ 1,00`;
 		},
 	},
 });
@@ -61,7 +61,7 @@ const schema = yup.object().shape({
 				preco: yup
 					.string()
 					.required()
-					.matches(/^(?!0,00)/gm)
+					.matches(/^(?!0,??)/gm)
 					.label("Preço"),
 				descricao: yup
 					.string()
@@ -87,9 +87,11 @@ const LayoutProdutos: React.FC = () => {
 	const [deletados, setDeletados] = useState<number[]>([]);
 
 	useEffect(() => {
-		if ((user as IPrestador)?.produtos) {
+		if ((user as IPrestador)?.produtos && produtos.length >= 0) {
 			setProdutos(() => {
-				return (user as IPrestador).produtos.map((p) => {
+				return (
+					JSON.parse(localStorage.getItem("user")) as IPrestador
+				).produtos.map((p) => {
 					return { ...p, preco: handlePrice(p.preco) };
 				});
 			});
@@ -120,8 +122,7 @@ const LayoutProdutos: React.FC = () => {
 		return valor as string;
 	};
 
-	const handleAdd = () => {
-		setFeedback(feedbackDefault);
+	const handleAdd = useCallback(() => {
 		if (produtos.length === 0) {
 			setProdutos([{ id: shortid(), descricao: "", preco: "0,00" }]);
 		} else {
@@ -130,19 +131,22 @@ const LayoutProdutos: React.FC = () => {
 				{ id: shortid(), descricao: "", preco: "0,00" },
 			]);
 		}
-	};
+		setAlterado(true);
+	}, [produtos]);
 
-	const handleTrash = (produto: IProduto) => {
-		setProdutos((oldProdutos) => {
-			return oldProdutos.filter((p) => p.id !== produto.id);
-		});
-		if (typeof produto.id == "number") {
-			setDeletados((oldProdutos) => {
-				return [...oldProdutos, produto.id as number];
+	const handleTrash = useCallback(
+		(produto: IProduto) => {
+			setProdutos((oldProdutos) => {
+				return oldProdutos.filter((p) => p.id !== produto.id);
 			});
-			setAlterado(true);
-		}
-	};
+			if (typeof produto.id == "number") {
+				setDeletados((oldProdutos) => {
+					return [...oldProdutos, produto.id as number];
+				});
+			}
+		},
+		[produtos, alterado, deletados]
+	);
 
 	const handleChange = (
 		e: ChangeEvent,
@@ -165,7 +169,6 @@ const LayoutProdutos: React.FC = () => {
 				}
 			});
 		});
-		setAlterado(true);
 	};
 
 	const handleContinuar = useCallback(() => {
@@ -193,8 +196,9 @@ const LayoutProdutos: React.FC = () => {
 			const data = {
 				produtos,
 				prestadorId: (user as IPrestador).id,
-				deletados,
+				deletados: deletados.sort((a, b) => a - b),
 			};
+			console.warn(data)
 			const posted = await axios.post(
 				`${profileEnv.baseUrl}/setprodutos`,
 				data,
@@ -208,12 +212,12 @@ const LayoutProdutos: React.FC = () => {
 			);
 			setFeedback({
 				icon: "bi bi-check-circle",
-				message: posted.data,
+				message: "Dados alterados!",
 				color: "text-success fw-bolder",
 			});
-			const newUser = await localStorage.setItem(
+			await localStorage.setItem(
 				"user",
-				JSON.stringify({ ...user, produtos: [...produtos] })
+				JSON.stringify({ ...user, produtos: [...posted.data] })
 			);
 			setLoading(false);
 			setAlterado(false);
@@ -258,11 +262,14 @@ const LayoutProdutos: React.FC = () => {
 												{alterado ? (
 													<>
 														<Button
-															onClick={() =>
+															onClick={() => {
 																setAlterado(
 																	false
-																)
-															}
+																);
+																setDeletados(
+																	[]
+																);
+															}}
 															variant="warning"
 															disabled={loading}
 														>
@@ -277,15 +284,28 @@ const LayoutProdutos: React.FC = () => {
 														>
 															Confirmar
 														</Button>
+														<Button
+															onClick={() =>
+																handleAdd()
+															}
+															disabled={loading}
+															className="me-1"
+														>
+															Adicionar
+														</Button>
 													</>
-												) : null}
-												<Button
-													onClick={() => handleAdd()}
-													disabled={loading}
-													className="me-1"
-												>
-													Adicionar
-												</Button>
+												) : (
+													<Button
+														onClick={() =>
+															setAlterado(true)
+														}
+														disabled={loading}
+														className="me-1"
+														variant="secondary"
+													>
+														Alterar
+													</Button>
+												)}
 											</ButtonGroup>
 										</div>
 										<div className="ms-2">
@@ -319,7 +339,10 @@ const LayoutProdutos: React.FC = () => {
 																	"descricao"
 																)
 															}
-															disabled={loading}
+															disabled={
+																loading ||
+																!alterado
+															}
 														/>
 													</FloatingLabel>
 													<FloatingLabel
@@ -339,23 +362,30 @@ const LayoutProdutos: React.FC = () => {
 																	"preco"
 																)
 															}
-															disabled={loading}
+															disabled={
+																loading ||
+																!alterado
+															}
 														/>
 													</FloatingLabel>
-													<Button
-														className="position-absolute"
-														variant="danger"
-														style={{
-															top: -10,
-															right: -10,
-														}}
-														onClick={() =>
-															handleTrash(current)
-														}
-														disabled={loading}
-													>
-														<i className="bi bi-trash-fill"></i>
-													</Button>
+													{alterado && (
+														<Button
+															className="position-absolute"
+															variant="danger"
+															style={{
+																top: -10,
+																right: -10,
+															}}
+															onClick={() =>
+																handleTrash(
+																	current
+																)
+															}
+															disabled={loading}
+														>
+															<i className="bi bi-trash-fill"></i>
+														</Button>
+													)}
 												</div>
 											);
 										})}
@@ -376,13 +406,28 @@ const LayoutProdutos: React.FC = () => {
 											Nenhum produto
 										</h2>
 									</div>
-									<Button
-										variant="primary"
-										size="lg"
-										onClick={() => handleAdd()}
-									>
-										Adicionar novo
-									</Button>
+									<ButtonGroup>
+										<Button
+											variant="primary"
+											size="lg"
+											onClick={() => {
+												handleAdd();
+											}}
+										>
+											Adicionar novo
+										</Button>
+										{deletados.length > 0 && (
+											<Button
+												variant="success"
+												size="lg"
+												onClick={() =>
+													handleContinuar()
+												}
+											>
+												Confirmar
+											</Button>
+										)}
+									</ButtonGroup>
 								</div>
 							)}
 						</div>
