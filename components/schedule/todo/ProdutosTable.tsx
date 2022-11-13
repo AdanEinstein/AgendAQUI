@@ -6,6 +6,7 @@ import {
 	PopoverHeader,
 	Table,
 } from "react-bootstrap";
+import { handlePrice } from "../../utils/utilsPrices";
 import { ISchedule } from "./ISchedule";
 
 interface IProdutosTableProps {
@@ -28,14 +29,13 @@ const ProdutosTable: React.FC<IProdutosTableProps> = ({ schedule }) => {
 					setShow(false);
 				}}
 			>
-				{schedule.produto
-					.map((sch) => sch.valor)
-					.reduce((acc: number, atual: string) => {
-						const curr = parseFloat(
-							atual.replace(".", "").replace(",", ".")
-						);
-						return (acc += curr);
-					}, 0)
+				{schedule.produtos
+					.map((sch) => sch.preco)
+					.reduce(
+						(acc: number, atual: string) =>
+							(acc += parseFloat(atual)),
+						0
+					)
 					.toLocaleString("pt-br", {
 						style: "currency",
 						currency: "BRL",
@@ -59,33 +59,24 @@ const ProdutosTable: React.FC<IProdutosTableProps> = ({ schedule }) => {
 										</tr>
 									</thead>
 									<tbody>
-										{schedule.produto?.map((sch) => {
+										{schedule.produtos?.map((sch) => {
 											return (
 												<tr key={sch.id}>
 													<td>{sch.descricao}</td>
-													<td>{sch.valor}</td>
+													<td>{handlePrice(sch.preco)}</td>
 												</tr>
 											);
 										})}
 									</tbody>
 								</Table>
-								<div className='d-flex align-items-center'>
-									<span className='flex-grow-1'>Total:</span>
-									<span className='flex-grow-1 btn btn-success'>
-										{schedule.produto
-											.map((sch) => sch.valor)
+								<div className="d-flex align-items-center">
+									<span className="flex-grow-1">Total:</span>
+									<span className="flex-grow-1 btn btn-success">
+										{schedule.produtos
+											.map((sch) => sch.preco)
 											.reduce(
-												(
-													acc: number,
-													atual: string
-												) => {
-													const curr = parseFloat(
-														atual
-															.replace(".", "")
-															.replace(",", ".")
-													);
-													return (acc += curr);
-												},
+												(acc: number, atual: string) =>
+													(acc += parseFloat(atual)),
 												0
 											)
 											.toLocaleString("pt-br", {

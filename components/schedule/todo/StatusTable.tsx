@@ -2,7 +2,9 @@ import React, { useCallback, useRef, useState } from "react";
 import { Overlay, Popover, PopoverBody, PopoverHeader } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { generate } from "shortid";
+import { IPrestador } from "../../../@types/Models";
 import { useSchedule } from "../../../contexts/ScheduleContext";
+import { useUser } from "../../../contexts/UserContext";
 import { ISchedule, Status } from "./ISchedule";
 
 interface IStatusTableProps {
@@ -20,6 +22,7 @@ const StatusTable: React.FC<IStatusTableProps> = ({
 	const [show, setShow] = useState<boolean>(false);
 	const [fix, setFix] = useState<boolean>(false);
 	const { dia, mes, ano } = useSchedule();
+	const {typeUser} = useUser()
 
 	const handleEditStatus = useCallback(
 		(status: Status, sched: ISchedule) => {
@@ -115,89 +118,104 @@ const StatusTable: React.FC<IStatusTableProps> = ({
 						</span>
 					))}
 			</td>
-			<Overlay
-				target={tdRef.current}
-				show={show}
-				placement={"left-start"}
-			>
-				{(props) => {
-					return (
-						<Popover {...props}>
-							<PopoverHeader as="h3">Status</PopoverHeader>
-							<PopoverBody>
-								Clique para mudar o status!
-							</PopoverBody>
-						</Popover>
-					);
-				}}
-			</Overlay>
-			<Overlay target={tdRef.current} show={fix} placement={"left-start"}>
-				{(props) => {
-					return (
-						<Popover {...props}>
-							<PopoverHeader as="h3">Status</PopoverHeader>
-							<PopoverBody>
-								<div
-									className="d-flex flex-column"
-									onMouseLeave={() => setFix(false)}
-								>
-									<Button
-										className="flex-grow-1 m-3"
-										variant={"secondary"}
-										size="lg"
-										disabled={
-											schedule.status === "agendado"
-										}
-										onClick={() =>
-											handleEditStatus(
-												"agendado",
-												schedule
-											)
-										}
-									>
-										Agendado{" "}
-										<i className="bi bi-hourglass-split"></i>
-									</Button>
-									<Button
-										className="flex-grow-1 m-3"
-										variant={"danger"}
-										size="lg"
-										disabled={
-											schedule.status === "cancelado"
-										}
-										onClick={() =>
-											handleEditStatus(
-												"cancelado",
-												schedule
-											)
-										}
-									>
-										Cancelado{" "}
-										<i className="bi bi-x-circle"></i>
-									</Button>
-									<Button
-										className="flex-grow-1 m-3"
-										variant={"success"}
-										size="lg"
-										disabled={
-											schedule.status === "concluido"
-										}
-										onClick={() =>
-											handleEditStatus(
-												"concluido",
-												schedule
-											)
-										}
-									>
-										Concluído{" "}
-										<i className="bi bi-check2-circle"></i>
-									</Button>
-								</div>
-							</PopoverBody>
-						</Popover>
-					);
-				}}
-			</Overlay>
+			{typeUser == "prestador" && (
+				<>
+					<Overlay
+						target={tdRef.current}
+						show={show}
+						placement={"left-start"}
+					>
+						{(props) => {
+							return (
+								<Popover {...props}>
+									<PopoverHeader as="h3">
+										Status
+									</PopoverHeader>
+									<PopoverBody>
+										Clique para mudar o status!
+									</PopoverBody>
+								</Popover>
+							);
+						}}
+					</Overlay>
+					<Overlay
+						target={tdRef.current}
+						show={fix}
+						placement={"left-start"}
+					>
+						{(props) => {
+							return (
+								<Popover {...props}>
+									<PopoverHeader as="h3">
+										Status
+									</PopoverHeader>
+									<PopoverBody>
+										<div
+											className="d-flex flex-column"
+											onMouseLeave={() => setFix(false)}
+										>
+											<Button
+												className="flex-grow-1 m-3"
+												variant={"secondary"}
+												size="lg"
+												disabled={
+													schedule.status ===
+													"agendado"
+												}
+												onClick={() =>
+													handleEditStatus(
+														"agendado",
+														schedule
+													)
+												}
+											>
+												Agendado{" "}
+												<i className="bi bi-hourglass-split"></i>
+											</Button>
+											<Button
+												className="flex-grow-1 m-3"
+												variant={"danger"}
+												size="lg"
+												disabled={
+													schedule.status ===
+													"cancelado"
+												}
+												onClick={() =>
+													handleEditStatus(
+														"cancelado",
+														schedule
+													)
+												}
+											>
+												Cancelado{" "}
+												<i className="bi bi-x-circle"></i>
+											</Button>
+											<Button
+												className="flex-grow-1 m-3"
+												variant={"success"}
+												size="lg"
+												disabled={
+													schedule.status ===
+													"concluido"
+												}
+												onClick={() =>
+													handleEditStatus(
+														"concluido",
+														schedule
+													)
+												}
+											>
+												Concluído{" "}
+												<i className="bi bi-check2-circle"></i>
+											</Button>
+										</div>
+									</PopoverBody>
+								</Popover>
+							);
+						}}
+					</Overlay>
+				</>
+			)}
 		</>
 	);
 };

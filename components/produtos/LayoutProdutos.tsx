@@ -39,7 +39,7 @@ yup.setLocale({
 	},
 	string: {
 		max(params) {
-			return `${params.path} deve ter no máximo ${params.value} de tamanho`;
+			return `${params.path} deve ter no máximo 40 caracteres de tamanho`;
 		},
 		matches(params) {
 			return `${params.path} não pode ser menor que R$ 1,00`;

@@ -8,41 +8,112 @@ import { IAcoes } from "./LayoutSchedule";
 import shortid from "shortid";
 import StatusTable from "./StatusTable";
 import ProdutosTable from "./ProdutosTable";
+import { useUser } from "../../../contexts/UserContext";
+import { profileEnv } from "../../../auth/baseUrl";
+import axios from "axios";
+import { IAgendamento, ICliente, IPrestador } from "../../../@types/Models";
 
-const ListSchedules: React.FC<IAcoes> = ({ setTelas, setTarget }) => {
+const ListSchedules: React.FC<IAcoes> = ({
+	setTelas,
+	setTarget,
+	agendado,
+	page,
+	setPage,
+}) => {
+	const { typeUser, user } = useUser();
 	const { dia, mes, ano, schedules, setSchedules } = useSchedule();
 	const [restore, setRestore] = useState<boolean>(false);
 
 	useEffect(() => {
-		// window.Main.sendMessage("schedule", { ano, mes, dia });
-		// window.Main.on(
-		// 	"schedule",
-		// 	(_: any, resp: IResultStatus<ISchedule[]>) => {
-		// 		resp.data && setSchedules(resp.data);
-		// 	}
-		// );
-	}, [dia, mes, ano, restore]);
+		const getAgendamentos = async () => {
+			let data = { data: {} };
+			if (agendado) {
+				data = await axios.post(
+					`${profileEnv.baseUrl}/getagendamentosprestador`,
+					{
+						id: agendado.id,
+						data: `${dia}/${mes}/${ano}`,
+						page: page,
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem(
+								"token"
+							)}`,
+							"Content-Type": "application/json",
+						},
+					}
+				);
+			} else {
+				data = await axios.post(
+					`${profileEnv.baseUrl}/getagendamentoscliente`,
+					{ id: user.id, data: `${dia}/${mes}/${ano}`, page: page },
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem(
+								"token"
+							)}`,
+							"Content-Type": "application/json",
+						},
+					}
+				);
+			}
+			return data.data;
+		};
+		getAgendamentos()
+			.then((data) => {
+				if (typeof data == "string") {
+					setSchedules([]);
+				} else {
+					const agendamentosParaSchedules: ISchedule[] = (
+						data as IAgendamento[]
+					).map((agen) => {
+						const sch: ISchedule = {
+							id: agen.id,
+							cliente: agen.cliente,
+							prestador: agen.prestador,
+							data: agen.dataEHora.split(" ")[0],
+							horario: agen.dataEHora.split(" ")[1],
+							status:
+								agen.status === 0
+									? "agendado"
+									: agen.status === 1
+									? "concluido"
+									: "cancelado",
+							produtos: JSON.parse(
+								(agen as any).produtosAgendados
+							),
+						};
+						return sch;
+					});
+					setSchedules(agendamentosParaSchedules);
+				}
+			})
+			.catch(() => {
+				setSchedules([]);
+			});
+	}, [dia, mes, ano, restore, user]);
 
 	const orderByHour = (schedA: ISchedule, schedB: ISchedule) => {
-		const [horaA, minutoA] = schedA.horario.split(':')
-		const [horaB, minutoB] = schedB.horario.split(':')
-		const horaNumA = parseInt(horaA)
-		const minutoNumA = parseInt(minutoA)
-		const horaNumB = parseInt(horaB)
-		const minutoNumB = parseInt(minutoB)
-		if(horaNumA > horaNumB) return -1
-		else if(horaNumA < horaNumB) return 1
+		const [horaA, minutoA] = schedA.horario.split(":");
+		const [horaB, minutoB] = schedB.horario.split(":");
+		const horaNumA = parseInt(horaA);
+		const minutoNumA = parseInt(minutoA);
+		const horaNumB = parseInt(horaB);
+		const minutoNumB = parseInt(minutoB);
+		if (horaNumA > horaNumB) return -1;
+		else if (horaNumA < horaNumB) return 1;
 		else {
-			if(minutoNumA > minutoNumB) return -1
-			else if(minutoNumA < minutoNumB) return 1
-			else return 0
+			if (minutoNumA > minutoNumB) return -1;
+			else if (minutoNumA < minutoNumB) return 1;
+			else return 0;
 		}
-	}
+	};
 
 	const handleListDelete = useCallback(
-		(schedule: ISchedule) => {
+		(agend: IAgendamento) => {
 			if (setTarget && setTelas) {
-				setTarget({ schedule, estado: "deletar" });
+				setTarget({ agendamento: agend, estado: "deletar" });
 				setTelas("form");
 			}
 		},
@@ -50,9 +121,9 @@ const ListSchedules: React.FC<IAcoes> = ({ setTelas, setTarget }) => {
 	);
 
 	const handleListEdit = useCallback(
-		(schedule: ISchedule) => {
+		(agend: IAgendamento) => {
 			if (setTarget && setTelas) {
-				setTarget({ schedule, estado: "editar" });
+				setTarget({ agendamento: agend, estado: "editar" });
 				setTelas("form");
 			}
 		},
@@ -65,10 +136,10 @@ const ListSchedules: React.FC<IAcoes> = ({ setTelas, setTarget }) => {
 				<thead className="table-dark">
 					<tr>
 						<th>Horário</th>
-						<th>Cliente</th>
-						<th className='d-md-table-cell d-none'>Produtos</th>
-						<th className='d-md-table-cell d-none'>Status</th>
-						<th>Ações</th>
+						<th>{agendado ? "Cliente" : "Prestador"}</th>
+						<th className="d-md-table-cell d-none">Produtos</th>
+						<th className="d-md-table-cell d-none">Status</th>
+						{!agendado && (<th>Ações</th>)}
 					</tr>
 				</thead>
 				<tbody>
@@ -76,53 +147,92 @@ const ListSchedules: React.FC<IAcoes> = ({ setTelas, setTarget }) => {
 						return (
 							<tr key={sch.id}>
 								<td>{sch.horario}</td>
-								<td>{sch.cliente}</td>
-								<ProdutosTable schedule={sch}/>
-								<StatusTable schedule={sch} setRestore={setRestore} restore={restore}/>
-								<td className="d-flex justify-content-around">
+								<td>
+									{agendado ? (sch.cliente as  ICliente).nome : (sch.prestador as IPrestador).nome}
+								</td>
+								<ProdutosTable schedule={sch} />
+								<StatusTable
+									schedule={sch}
+									setRestore={setRestore}
+									restore={restore}
+								/>
+								{!agendado && (<td className="d-flex justify-content-around">
 									<Button
 										size="sm"
 										variant="warning"
-										disabled={sch.status === 'concluido'}
-										onClick={() => handleListEdit(sch)}
+										disabled={sch.status === "concluido"}
+										onClick={() =>
+											handleListEdit({
+												id: sch.id as number,
+												dataEHora: `${sch.data} ${sch.horario}`,
+												cliente: (sch.cliente as ICliente),
+												prestador: (sch.prestador as IPrestador),
+												estrelas: 0,
+												produtos: sch.produtos,
+												status:
+													sch.status === "agendado"
+														? 0
+														: sch.status ===
+														  "cancelado"
+														? -1
+														: 1,
+											})
+										}
 									>
 										<i className="bi bi-pencil-square flex-grow-1 mx-1"></i>
 									</Button>
 									<Button
 										size="sm"
 										variant="danger"
-										disabled={sch.status === 'concluido'}
-										onClick={() => handleListDelete(sch)}
+										disabled={sch.status === "concluido"}
+										onClick={() => handleListDelete({
+											id: sch.id as number,
+											dataEHora: `${sch.data} ${sch.horario}`,
+											cliente: (sch.cliente as ICliente),
+											prestador: (sch.prestador as IPrestador),
+											estrelas: 0,
+											produtos: sch.produtos,
+											status:
+												sch.status === "agendado"
+													? 0
+													: sch.status ===
+													  "cancelado"
+													? -1
+													: 1,
+										})}
 									>
 										<i className="bi bi-trash-fill flex-grow-1 mx-1"></i>
 									</Button>
-								</td>
+								</td>)}
 							</tr>
 						);
 					})}
 				</tbody>
 			</Table>
-			<Button
-				className="position-absolute btn-lg"
-				style={{ bottom: 30, right: 30 }}
-				onClick={() => {
-					setTarget &&
-						setTarget({
-							schedule: {
-								id: shortid(),
-								data: { ano, mes, dia },
-								cliente: "",
-								horario: "",
-								produto: [],
-								status: "agendado",
-							},
-							estado: "novo",
-						});
-					setTelas && setTelas("form");
-				}}
-			>
-				Novo agendamento <i className="bi bi-plus-square-fill"></i>
-			</Button>
+			{typeUser == "cliente" && agendado && (
+				<Button
+					className="position-absolute btn-lg"
+					style={{ bottom: 30, right: 30 }}
+					onClick={() => {
+						setTarget &&
+							setTarget({
+								agendamento: {
+									id: shortid(),
+									cliente: user as ICliente,
+									prestador: agendado,
+									dataEHora: `${dia}/${mes}/${ano}`,
+									estrelas: 0,
+									status: 0,
+									produtos: [],
+								},
+								estado: "novo",
+							});
+						setTelas && setTelas("form");
+					}}
+				>
+					Novo agendamento <i className="bi bi-plus-square-fill"></i>
+				</Button>
+			)}
 		</Container>
 	);
 };
