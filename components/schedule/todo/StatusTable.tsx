@@ -34,7 +34,6 @@ const StatusTable: React.FC<IStatusTableProps> = ({
 					dataEHora: `${sched.data} ${sched.horario}`,
 					cliente: (sched.cliente as ICliente),
 					prestador: (sched.prestador as IPrestador),
-					estrelas: 0,
 					produtos: sched.produtos,
 					status:
 						status === "agendado"
