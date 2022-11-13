@@ -70,7 +70,7 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 				<thead className="table-dark">
 					<tr>
 						<th style={{ width: "45%" }}>Nome</th>
-						<th style={{ width: "25%" }}>Telefone</th>
+						<th style={{ width: "25%" }}>Categoria</th>
 						<th
 							style={{ width: "10%" }}
 							className="d-md-table-cell d-none"
@@ -108,7 +108,7 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 										  "..."
 										: pre.nome}
 								</td>
-								<td style={{ width: "25%" }}>{pre.telefone}</td>
+								<td style={{ width: "25%" }}>{pre.categoria || "Não informado"}</td>
 								<DescricaoTable prestador={pre} />
 								<ProdutosPrestadorTable prestador={pre} />
 								<td style={{ width: "25%" }}>

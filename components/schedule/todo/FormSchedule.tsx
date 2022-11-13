@@ -81,7 +81,12 @@ const feedbackDefault: IFeedback = {
 	color: "text-primary",
 };
 
-const FormSchedule: React.FC<IAcoes> = ({ target, setTarget, setTelas, setAgendado }) => {
+const FormSchedule: React.FC<IAcoes> = ({
+	target,
+	setTarget,
+	setTelas,
+	setAgendado,
+}) => {
 	const [feedback, setFeedback] = useState<IFeedback>(feedbackDefault);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [horario, setHorario] = useState<string>("");
@@ -140,34 +145,40 @@ const FormSchedule: React.FC<IAcoes> = ({ target, setTarget, setTelas, setAgenda
 				horario: horarioRef.current.value,
 				produtos,
 			};
-			try{
-				await schema.validate(dataAgenda)
+			try {
+				await schema.validate(dataAgenda);
 				const envio: ITargetAgendamento = {
 					...target,
 					agendamento: {
 						...target.agendamento,
-						dataEHora: `${target.agendamento.dataEHora.split(" ")[0]} ${horarioRef.current.value}`,
+						dataEHora: `${
+							target.agendamento.dataEHora.split(" ")[0]
+						} ${horarioRef.current.value}`,
 						produtos,
-					}
-				}
-				await axios.post(`${profileEnv.baseUrl}/setagendamento`, {data: envio}, {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem(
-							"token"
-						)}`,
 					},
-				})
+				};
+				await axios.post(
+					`${profileEnv.baseUrl}/setagendamento`,
+					{ data: envio },
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem(
+								"token"
+							)}`,
+						},
+					}
+				);
 				setFeedback({
 					icon: "bi bi-check-circle",
-					message: "Agendamento feito com sucesso!",
+					message: "Ação completa com sucesso!",
 					color: "text-success",
 				});
 				setLoading(false);
 				setTarget(envio);
-				setAgendado(null)
-				setTelas("lista")
-				setAtualizar(true)
-			} catch(err) {
+				setAgendado(null);
+				setTelas("lista");
+				setAtualizar(true);
+			} catch (err) {
 				if (err instanceof yup.ValidationError) {
 					setFeedback({
 						icon: "bi bi-exclamation-diamond-fill",

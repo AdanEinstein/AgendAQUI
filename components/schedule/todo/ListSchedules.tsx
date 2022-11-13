@@ -46,7 +46,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 				);
 			} else {
 				data = await axios.post(
-					`${profileEnv.baseUrl}/getagendamentoscliente`,
+					`${profileEnv.baseUrl}/getagendamentos${typeUser !== "login" && typeUser}`,
 					{ id: user.id, data: `${dia}/${mes}/${ano}`, page: page },
 					{
 						headers: {
@@ -136,7 +136,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 				<thead className="table-dark">
 					<tr>
 						<th>Horário</th>
-						<th>{agendado ? "Cliente" : "Prestador"}</th>
+						<th>{(typeUser == "prestador" || agendado) ? "Cliente" : "Prestador"}</th>
 						<th className="d-md-table-cell d-none">Produtos</th>
 						<th className="d-md-table-cell d-none">Status</th>
 						{!agendado && (<th>Ações</th>)}
@@ -148,7 +148,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 							<tr key={sch.id}>
 								<td>{sch.horario}</td>
 								<td>
-									{agendado ? (sch.cliente as  ICliente).nome : (sch.prestador as IPrestador).nome}
+									{(typeUser == "prestador" || agendado) ? (sch.cliente as  ICliente).nome : (sch.prestador as IPrestador).nome}
 								</td>
 								<ProdutosTable schedule={sch} />
 								<StatusTable

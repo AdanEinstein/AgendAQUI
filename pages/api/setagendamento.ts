@@ -51,12 +51,29 @@ export default async function SetAgendamento(
 			const dataAgenda = await axios({
 				method: "patch",
 				url: `${profileEnv.baseUrlJava}/api/agendamento/alterar/${data.agendamento.id}`,
+				data: {
+					clienteid: data.agendamento.cliente.id,
+					prestadorid: data.agendamento.prestador.id,
+					dataehora: `${data.agendamento.dataEHora}`,
+					produtosagendados: data.agendamento.produtos,
+					status: data.agendamento.status || 0
+				},
 				headers: {
 					Authorization: request.headers.authorization,
 					"Content-Type": "application/json",
 				},
 			});
+			response.status(201).json(dataAgenda.data);
 		} else if (data.estado == "deletar") {
+			const dataAgenda = await axios({
+				method: "delete",
+				url: `${profileEnv.baseUrlJava}/api/agendamento/deletar?id=${data.agendamento.id}`,
+				headers: {
+					Authorization: request.headers.authorization,
+					"Content-Type": "application/json",
+				},
+			});
+			response.status(201).json(dataAgenda.data);
 		} else {
 			response.status(400).send("Nada foi feito");
 		}

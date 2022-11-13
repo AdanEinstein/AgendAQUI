@@ -29,6 +29,7 @@ export interface IPrestador {
 	cpfj: string;
 	telefone: string;
 	descricao: string;
+	categoria: string;
 	email: string;
 	paginaFacebook: string;
 	login: ILogin;
@@ -42,5 +43,4 @@ export interface IAgendamento {
 	dataEHora: string;
 	produtos: IProduto[];
 	status: 1 | 0 | -1;
-	estrelas: number;
 }

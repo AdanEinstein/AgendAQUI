@@ -38,6 +38,7 @@ const schemaLogin = yup.object().shape({
 const schemaPrestador = yup.object().shape({
 	paginaFacebook: yup.string().label("Pagina do facebook"),
 	email: yup.string().email().required().label("E-mail"),
+	categoria: yup.string().label("Categoria"),
 	descricao: yup.string().label("Descrição"),
 	telefone: yup
 		.string()
@@ -66,7 +67,7 @@ const FormCliente: React.FC = () => {
 	const [feedback, setFeedback] = useState<IFeedback>(feedbackDefault);
 	const [refresh, setRefresh] = useState<boolean>(false);
 	const [alterarLogin, setAlterarLogin] = useState<boolean>(false);
-
+	const [tela, setTela] = useState<"tela1" | "tela2">("tela1");
 	const [nome, setNome] = useState<string>((user as IPrestador).nome);
 	const [cpfj, setCpfj] = useState<string>((user as IPrestador).cpfj);
 	const [telefone, setTelefone] = useState<string>(
@@ -74,6 +75,9 @@ const FormCliente: React.FC = () => {
 	);
 	const [descricao, setDescricao] = useState<string>(
 		(user as IPrestador).descricao
+	);
+	const [categoria, setCategoria] = useState<string>(
+		(user as IPrestador).categoria
 	);
 	const [email, setEmail] = useState<string>((user as IPrestador).email);
 	const [paginaFacebook, setPaginaFacebook] = useState<string>(
@@ -90,27 +94,29 @@ const FormCliente: React.FC = () => {
 	const telefoneRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		let val = cpfjRef.current.value.replace(/\D/g, "");
-		if (val.length <= 11) {
-			val = val.replace(/^(\d{3})(\d)/, "$1.$2");
-			val = val.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
-			val = val.replace(/\.(\d{3})(\d)/, ".$1-$2");
-		} else {
-			val = val.replace(/^(\d{2})(\d)/, "$1.$2");
-			val = val.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
-			val = val.replace(/\.(\d{3})(\d)/, ".$1/$2");
-			val = val.replace(/(\d{4})(\d)/, "$1-$2");
-		}
-		if (val.length <= 18) setCpfj(val);
-		val = telefoneRef.current.value.replace(/\D/g, "");
-		if (val.length <= 11) {
-			val = val
-				.replace(/\D/g, "")
-				.replace(/(\d{2})(\d)/, "($1)$2")
-				.replace(/(\d{4})(\d)/, "$1-$2")
-				.replace(/(\d{4})-(\d)(\d{4})/, "$1$2-$3")
-				.replace(/(-\d{4})\d+?$/, "$1");
-			setTelefone(val);
+		if (cpfjRef) {
+			let val = cpfjRef.current.value.replace(/\D/g, "");
+			if (val.length <= 11) {
+				val = val.replace(/^(\d{3})(\d)/, "$1.$2");
+				val = val.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
+				val = val.replace(/\.(\d{3})(\d)/, ".$1-$2");
+			} else {
+				val = val.replace(/^(\d{2})(\d)/, "$1.$2");
+				val = val.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+				val = val.replace(/\.(\d{3})(\d)/, ".$1/$2");
+				val = val.replace(/(\d{4})(\d)/, "$1-$2");
+			}
+			if (val.length <= 18) setCpfj(val);
+			val = telefoneRef.current.value.replace(/\D/g, "");
+			if (val.length <= 11) {
+				val = val
+					.replace(/\D/g, "")
+					.replace(/(\d{2})(\d)/, "($1)$2")
+					.replace(/(\d{4})(\d)/, "$1-$2")
+					.replace(/(\d{4})-(\d)(\d{4})/, "$1$2-$3")
+					.replace(/(-\d{4})\d+?$/, "$1");
+				setTelefone(val);
+			}
 		}
 	}, []);
 
@@ -155,6 +161,7 @@ const FormCliente: React.FC = () => {
 			cpfj,
 			telefone,
 			descricao,
+			categoria,
 			email,
 			paginaFacebook,
 		};
@@ -234,124 +241,189 @@ const FormCliente: React.FC = () => {
 	return (
 		<div className={"container d-flex justify-content-center"}>
 			<div className="col-lg-6 col-md-8 col-12">
-				<h2 className="d-md-block d-none mb-4">
-					Aqui estão seus dados:
-				</h2>
-				<h2 className="d-md-none d-block">Dados:</h2>
+				<div className="d-flex justify-content-between">
+					<h2 className="d-md-block d-none mb-4">
+						Aqui estão seus dados:
+					</h2>
+					<h2 className="d-md-none d-block">Dados:</h2>
+					{tela == "tela1" ? (
+						<Button
+							className="me-2 mb-3"
+							variant="warning"
+							onClick={() => {
+								setTela("tela2");
+							}}
+						>
+							Informações{" "}
+							<i className="bi bi-info-circle-fill"></i>
+						</Button>
+					) : (
+						<Button
+							className="me-2 mb-3"
+							variant="secondary"
+							onClick={() => {
+								setTela("tela1");
+							}}
+						>
+							Retornar <i className="bi bi-back"></i>
+						</Button>
+					)}
+				</div>
 				<Form className="text-black">
-					<FloatingLabel label="Nome" className="mb-3">
-						<Form.Control
-							type="text"
-							placeholder="Nome"
-							disabled={loading || !refresh}
-							value={nome}
-							onChange={(e) => setNome(e.target.value)}
-						/>
-					</FloatingLabel>
-					<FloatingLabel label="CPF ou CNPJ" className="mb-3">
-						<Form.Control
-							type="text"
-							placeholder="CPF ou CNPJ"
-							disabled={loading || !refresh}
-							ref={cpfjRef}
-							value={cpfj}
-							onChange={handleFormatCpfj}
-						/>
-					</FloatingLabel>
-					<FloatingLabel label="Telefone" className="mb-3">
-						<Form.Control
-							type="text"
-							placeholder="Telefone"
-							disabled={loading || !refresh}
-							ref={telefoneRef}
-							value={telefone}
-							onChange={handleFormatTelefone}
-						/>
-					</FloatingLabel>
-					<FloatingLabel label="E-mail" className="mb-3">
-						<Form.Control
-							type="email"
-							placeholder="E-mail"
-							disabled={loading || !refresh}
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-						/>
-					</FloatingLabel>
-					<FloatingLabel label="Página facebook" className="mb-3">
-						<Form.Control
-							type="text"
-							placeholder="Página facebook"
-							disabled={loading || !refresh}
-							value={paginaFacebook}
-							onChange={(e) => setPaginaFacebook(e.target.value)}
-						/>
-					</FloatingLabel>
-					<div className="container d-flex flex-row justify-content-between mb-3">
-						<h4 className="text-white">Login:</h4>
-						{!refresh ? null : !alterarLogin ? (
-							<Button
-								variant="warning"
-								onClick={() => setAlterarLogin(true)}
-							>
-								Quero mudar login{" "}
-								<i className="bi bi-check-circle-fill"></i>
-							</Button>
-						) : (
-							<Button
-								variant="secondary"
-								onClick={() => setAlterarLogin(false)}
-							>
-								Não quero mais <i className="bi bi-x-lg"></i>
-							</Button>
-						)}
-					</div>
-					<FloatingLabel label="Login" className="mb-3">
-						<Form.Control
-							type="text"
-							placeholder="Login"
-							disabled={loading || !alterarLogin}
-							value={login}
-							onChange={(e) => setLogin(e.target.value)}
-						/>
-					</FloatingLabel>
-					{alterarLogin && (
+					{tela == "tela1" ? (
 						<>
+							<FloatingLabel label="Nome" className="mb-3">
+								<Form.Control
+									type="text"
+									placeholder="Nome"
+									disabled={loading || !refresh}
+									value={nome}
+									onChange={(e) => setNome(e.target.value)}
+								/>
+							</FloatingLabel>
+							<FloatingLabel label="CPF ou CNPJ" className="mb-3">
+								<Form.Control
+									type="text"
+									placeholder="CPF ou CNPJ"
+									disabled={loading || !refresh}
+									ref={cpfjRef}
+									value={cpfj}
+									onChange={handleFormatCpfj}
+								/>
+							</FloatingLabel>
+							<FloatingLabel label="Telefone" className="mb-3">
+								<Form.Control
+									type="text"
+									placeholder="Telefone"
+									disabled={loading || !refresh}
+									ref={telefoneRef}
+									value={telefone}
+									onChange={handleFormatTelefone}
+								/>
+							</FloatingLabel>
+							<FloatingLabel label="E-mail" className="mb-3">
+								<Form.Control
+									type="email"
+									placeholder="E-mail"
+									disabled={loading || !refresh}
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+								/>
+							</FloatingLabel>
 							<FloatingLabel
-								label="Senha antiga"
+								label="Página facebook"
 								className="mb-3"
 							>
 								<Form.Control
-									type="password"
-									placeholder="Senha antiga"
+									type="text"
+									placeholder="Página facebook"
 									disabled={loading || !refresh}
-									value={oldpassword}
+									value={paginaFacebook}
 									onChange={(e) =>
-										setOldPassword(e.target.value)
+										setPaginaFacebook(e.target.value)
 									}
 								/>
 							</FloatingLabel>
-							<FloatingLabel label="Senha" className="mb-3">
+							<div className="container d-flex flex-row justify-content-between mb-3">
+								<h4 className="text-white">Login:</h4>
+								{!refresh ? null : !alterarLogin ? (
+									<Button
+										variant="warning"
+										onClick={() => setAlterarLogin(true)}
+									>
+										Quero mudar login{" "}
+										<i className="bi bi-check-circle-fill"></i>
+									</Button>
+								) : (
+									<Button
+										variant="secondary"
+										onClick={() => setAlterarLogin(false)}
+									>
+										Não quero mais{" "}
+										<i className="bi bi-x-lg"></i>
+									</Button>
+								)}
+							</div>
+							<FloatingLabel label="Login" className="mb-3">
 								<Form.Control
-									type="password"
-									placeholder="Senha"
+									type="text"
+									placeholder="Login"
+									disabled={loading || !alterarLogin}
+									value={login}
+									onChange={(e) => setLogin(e.target.value)}
+								/>
+							</FloatingLabel>
+							{alterarLogin && (
+								<>
+									<FloatingLabel
+										label="Senha antiga"
+										className="mb-3"
+									>
+										<Form.Control
+											type="password"
+											placeholder="Senha antiga"
+											disabled={loading || !refresh}
+											value={oldpassword}
+											onChange={(e) =>
+												setOldPassword(e.target.value)
+											}
+										/>
+									</FloatingLabel>
+									<FloatingLabel
+										label="Senha"
+										className="mb-3"
+									>
+										<Form.Control
+											type="password"
+											placeholder="Senha"
+											disabled={loading || !refresh}
+											value={password}
+											onChange={(e) =>
+												setPassword(e.target.value)
+											}
+										/>
+									</FloatingLabel>
+									<FloatingLabel
+										label="Confirmação da senha"
+										className="mb-3"
+									>
+										<Form.Control
+											type="password"
+											placeholder="Confimação da senha"
+											disabled={loading || !refresh}
+											value={confirmPassword}
+											onChange={(e) =>
+												setConfirmPassword(
+													e.target.value
+												)
+											}
+										/>
+									</FloatingLabel>
+								</>
+							)}
+						</>
+					) : (
+						<>
+							<FloatingLabel label="Categoria" className="mb-3">
+								<Form.Control
+									type="text"
+									placeholder="Categoria"
 									disabled={loading || !refresh}
-									value={password}
+									value={categoria}
 									onChange={(e) =>
-										setPassword(e.target.value)
+										setCategoria(e.target.value)
 									}
 								/>
 							</FloatingLabel>
-							<FloatingLabel
-								label="Confirmação da senha"
-								className="mb-3"
-							>
+							<FloatingLabel label="Descrição" className="mb-3">
 								<Form.Control
-									type="password"
-									placeholder="Confimação da senha"
+									as="textarea"
+									placeholder="Descrição"
 									disabled={loading || !refresh}
-									value={confirmPassword}
+									value={descricao}
+									style={{ height: "300px" }}
 									onChange={(e) =>
-										setConfirmPassword(e.target.value)
+										setDescricao(e.target.value)
 									}
 								/>
 							</FloatingLabel>

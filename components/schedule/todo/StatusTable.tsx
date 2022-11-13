@@ -1,16 +1,19 @@
+import axios from "axios";
 import React, { useCallback, useRef, useState } from "react";
 import { Overlay, Popover, PopoverBody, PopoverHeader } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { generate } from "shortid";
-import { IPrestador } from "../../../@types/Models";
+import { ICliente, IPrestador } from "../../../@types/Models";
+import { profileEnv } from "../../../auth/baseUrl";
 import { useSchedule } from "../../../contexts/ScheduleContext";
 import { useUser } from "../../../contexts/UserContext";
 import { ISchedule, Status } from "./ISchedule";
+import { ITargetAgendamento } from "./LayoutSchedule";
 
 interface IStatusTableProps {
 	schedule: ISchedule;
 	restore: boolean;
-	setRestore(arg: boolean): void;
+	setRestore(arg: boolean | ((arg: boolean) => boolean)): void;
 }
 
 const StatusTable: React.FC<IStatusTableProps> = ({
@@ -21,59 +24,42 @@ const StatusTable: React.FC<IStatusTableProps> = ({
 	const tdRef = useRef<HTMLTableDataCellElement>(null);
 	const [show, setShow] = useState<boolean>(false);
 	const [fix, setFix] = useState<boolean>(false);
-	const { dia, mes, ano } = useSchedule();
 	const {typeUser} = useUser()
 
 	const handleEditStatus = useCallback(
-		(status: Status, sched: ISchedule) => {
-			// const newSchedule: ISchedule = {
-			// 	...sched,
-			// 	status: status,
-			// };
-			// window.Main.sendMessage("editschedule", {
-			// 	schedule: newSchedule,
-			// 	ano,
-			// 	mes,
-			// 	dia,
-			// });
-			// window.Main.on("editschedule", () => {
-			// 	setFix(false);
-			// 	setRestore(!restore);
-			// });
-			// const total = newSchedule.produto
-			// 	.map((sch) => sch.valor)
-			// 	.reduce((acc: number, atual: string) => {
-			// 		const curr = parseFloat(
-			// 			atual.replace(".", "").replace(",", ".")
-			// 		);
-			// 		return (acc += curr);
-			// 	}, 0)
-			// 	.toLocaleString("pt-br", { minimumFractionDigits: 2 });
-			// if (status === "concluido") {
-			// 	window.Main.sendMessage("newfinance", {
-			// 		finance: {
-			// 			id: schedule.id,
-			// 			descricao: `Pagamento ${schedule.cliente}`,
-			// 			valor: total,
-			// 			tipo: "entrada",
-			// 			data: `${dia}/${mes}/${ano}`,
-			// 		},
-			// 		ano,
-			// 		mes,
-			// 	});
-			// } else {
-			// 	window.Main.sendMessage("deletefinance", {
-			// 		finance: {
-			// 			id: schedule.id,
-			// 			descricao: `Pagamento ${schedule.cliente}`,
-			// 			valor: total,
-			// 			tipo: "entrada",
-			// 			data: `${dia}/${mes}/${ano}`,
-			// 		},
-			// 		ano,
-			// 		mes,
-			// 	});
-			// }
+		async (status: Status, sched: ISchedule) => {
+			const newAgendamento: ITargetAgendamento = {
+				agendamento : {
+					id: sched.id as number,
+					dataEHora: `${sched.data} ${sched.horario}`,
+					cliente: (sched.cliente as ICliente),
+					prestador: (sched.prestador as IPrestador),
+					estrelas: 0,
+					produtos: sched.produtos,
+					status:
+						status === "agendado"
+							? 0
+							: status ===
+							  "cancelado"
+							? -1
+							: 1,
+				},
+				estado: "editar"
+			};
+			await axios.post(
+				`${profileEnv.baseUrl}/setagendamento`,
+				{ data: newAgendamento },
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem(
+							"token"
+						)}`,
+					},
+				}
+			);
+			setRestore(old => {
+				return old == true ? false : true
+			})
 		},
 		[restore]
 	);
