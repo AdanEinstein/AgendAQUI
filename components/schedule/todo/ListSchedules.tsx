@@ -167,7 +167,6 @@ const ListSchedules: React.FC<IAcoes> = ({
 												dataEHora: `${sch.data} ${sch.horario}`,
 												cliente: (sch.cliente as ICliente),
 												prestador: (sch.prestador as IPrestador),
-												estrelas: 0,
 												produtos: sch.produtos,
 												status:
 													sch.status === "agendado"
@@ -190,7 +189,6 @@ const ListSchedules: React.FC<IAcoes> = ({
 											dataEHora: `${sch.data} ${sch.horario}`,
 											cliente: (sch.cliente as ICliente),
 											prestador: (sch.prestador as IPrestador),
-											estrelas: 0,
 											produtos: sch.produtos,
 											status:
 												sch.status === "agendado"
@@ -221,7 +219,6 @@ const ListSchedules: React.FC<IAcoes> = ({
 									cliente: user as ICliente,
 									prestador: agendado,
 									dataEHora: `${dia}/${mes}/${ano}`,
-									estrelas: 0,
 									status: 0,
 									produtos: [],
 								},
