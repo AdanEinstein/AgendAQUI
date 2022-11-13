@@ -92,7 +92,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 			.catch(() => {
 				setSchedules([]);
 			});
-	}, [dia, mes, ano, restore, user]);
+	}, [dia, mes, ano, restore, user, page]);
 
 	const orderByHour = (schedA: ISchedule, schedB: ISchedule) => {
 		const [horaA, minutoA] = schedA.horario.split(":");
@@ -207,6 +207,34 @@ const ListSchedules: React.FC<IAcoes> = ({
 					})}
 				</tbody>
 			</Table>
+			<div className="m-2 d-flex flex-row justify-content-end">
+					<div>
+						<Button
+							className="mx-1"
+							variant="secondary"
+							disabled={page == 0}
+							onClick={() => {
+								setPage(page - 1);
+							}}
+						>
+							Anterior <i className="bi bi-chevron-left"></i>
+						</Button>
+					</div>
+					<div>
+						<Button
+							className="mx-1"
+							variant="secondary"
+							disabled={schedules?.length !== 10}
+							onClick={() => {
+								if (schedules?.length !== 0) {
+									setPage(page + 1);
+								}
+							}}
+						>
+							Próximo <i className="bi bi-chevron-right"></i>
+						</Button>
+					</div>
+			</div>
 			{typeUser == "cliente" && agendado && (
 				<Button
 					className="position-absolute btn-lg"

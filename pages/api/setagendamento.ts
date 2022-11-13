@@ -29,7 +29,6 @@ export default async function SetAgendamento(
 	await runMiddleware(request, response, cors);
 	try {
 		const data: ITargetAgendamento = request.body.data;
-		console.log(data);
 		if (data.estado == "novo") {
 			const dataAgenda = await axios.post(
 				`${profileEnv.baseUrlJava}/api/agendamento/salvar`,
