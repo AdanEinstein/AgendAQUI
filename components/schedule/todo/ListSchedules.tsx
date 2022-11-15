@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, Spinner, Table } from "react-bootstrap";
 import { Container } from "react-bootstrap";
 import { useSchedule } from "../../../contexts/ScheduleContext";
 import { ISchedule } from "./ISchedule";
@@ -133,7 +133,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 		[setTarget, setTelas]
 	);
 
-	return (
+	return schedules ? (
 		<Container className={styles.Lista}>
 			<Table className="table-light">
 				<thead className="table-dark">
@@ -298,6 +298,8 @@ const ListSchedules: React.FC<IAcoes> = ({
 				</Button>
 			)}
 		</Container>
+	) : (
+		<Spinner animation="grow"/>
 	);
 };
 

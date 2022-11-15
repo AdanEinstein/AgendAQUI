@@ -1,6 +1,6 @@
 import axios from "axios";
 import { MouseEvent, useEffect, useState } from "react";
-import { Row } from "react-bootstrap";
+import { Row, Spinner } from "react-bootstrap";
 import { Button, Container, Table } from "react-bootstrap";
 import { IPrestador } from "../../../@types/Models";
 import { profileEnv } from "../../../auth/baseUrl";
@@ -25,7 +25,7 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 	setAgendado,
 	setShowTela,
 }) => {
-	const [prestadores, setPrestadores] = useState<IPrestador[]>([]);
+	const [prestadores, setPrestadores] = useState<IPrestador[]>(null);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [showModalAlert, setShowModalAlert] = useState<boolean>(false);
@@ -65,7 +65,7 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 		setShowTela("calendario");
 	};
 
-	return (
+	return prestadores ? (
 		<Container>
 			<Table className="table-light">
 				<thead className="table-dark">
@@ -200,6 +200,8 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 				</MyModal>
 			)}
 		</Container>
+	) : (
+		<Spinner animation="grow"/>
 	);
 };
 
