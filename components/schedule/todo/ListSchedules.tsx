@@ -144,7 +144,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 								? "Cliente"
 								: "Prestador"}
 						</th>
-						{typeUser == "cliente" && <th>Telefone</th>}
+						<th>Telefone</th>
 						<th className="d-md-table-cell d-none">Produtos</th>
 						<th>Status</th>
 						{!agendado && <th>Ações</th>}
@@ -170,11 +170,13 @@ const ListSchedules: React.FC<IAcoes> = ({
 												.join("") + "..."
 										: (sch.prestador as IPrestador).nome}
 								</td>
-								{typeUser == "cliente" && (
+								{typeUser == "cliente" ? (
 									<td>
 										{(sch.prestador as IPrestador).telefone}
 									</td>
-								)}
+								) : (<td>
+									{(sch.cliente as ICliente).telefone}
+								</td>)}
 								<ProdutosTable schedule={sch} />
 								<StatusTable
 									schedule={sch}
