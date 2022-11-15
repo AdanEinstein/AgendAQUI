@@ -80,6 +80,7 @@ const FormCadastroPrestador: React.FC = () => {
 						cpfj: cpfjRef.current.value,
 						telefone: telefoneRef.current.value,
 						descricao: "",
+						categoria: "",
 						email: emailRef.current.value,
 						paginaFacebook: "",
 						loginid: typeof JSON.parse(localStorage.getItem('user'))?.login == 'object' ? null : JSON.parse(localStorage.getItem('user'))?.id 

@@ -15,6 +15,7 @@ export default function CadastrarLogin(
                 cpfj: request.body.cpfj,
                 telefone: request.body.telefone,
                 descricao: request.body.descricao,
+                categoria: request.body.categoria,
                 email: request.body.email,
                 paginaFacebook: request.body.paginaFacebook,
                 loginid: request.body.loginid,
