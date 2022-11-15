@@ -201,7 +201,7 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 			)}
 		</Container>
 	) : (
-		<Spinner animation="grow"/>
+		<Spinner animation="grow" variant="warning"/>
 	);
 };
 

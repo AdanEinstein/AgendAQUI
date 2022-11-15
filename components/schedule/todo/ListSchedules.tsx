@@ -299,7 +299,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 			)}
 		</Container>
 	) : (
-		<Spinner animation="grow"/>
+		<Spinner animation="grow" variant="warning"/>
 	);
 };
 
