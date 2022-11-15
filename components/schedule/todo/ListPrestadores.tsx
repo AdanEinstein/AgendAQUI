@@ -28,6 +28,7 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 	const [prestadores, setPrestadores] = useState<IPrestador[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [showModal, setShowModal] = useState<boolean>(false);
+	const [showModalAlert, setShowModalAlert] = useState<boolean>(false);
 	const [select, setSelect] = useState<IPrestador>(null);
 
 	useEffect(() => {
@@ -69,7 +70,8 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 			<Table className="table-light">
 				<thead className="table-dark">
 					<tr>
-						<th style={{ width: "45%" }}>Nome</th>
+						<th style={{ width: "35%" }}>Nome</th>
+						<th style={{ width: "10%" }}>Telefone</th>
 						<th style={{ width: "25%" }}>Categoria</th>
 						<th
 							style={{ width: "10%" }}
@@ -92,7 +94,7 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 							<tr key={pre.id}>
 								<td
 									className="d-sm-table-cell d-none"
-									style={{ width: "45%" }}
+									style={{ width: "35%" }}
 								>
 									{pre.nome.length >= 30
 										? pre.nome.split("", 30).join("") +
@@ -108,7 +110,12 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 										  "..."
 										: pre.nome}
 								</td>
-								<td style={{ width: "25%" }}>{pre.categoria || "Não informado"}</td>
+								<td style={{ width: "10%" }}>
+									{pre.telefone || "Não informado"}
+								</td>
+								<td style={{ width: "25%" }}>
+									{pre.categoria || "Não informado"}
+								</td>
 								<DescricaoTable prestador={pre} />
 								<ProdutosPrestadorTable prestador={pre} />
 								<td style={{ width: "25%" }}>
@@ -116,7 +123,11 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 										variant="primary"
 										onClick={() => {
 											setSelect(pre);
-											setShowModal(true);
+											if (select.produtos.length > 0) {
+												setShowModal(true);
+											} else {
+												setShowModalAlert(true);
+											}
 										}}
 									>
 										Agendar{" "}
@@ -129,32 +140,32 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 				</tbody>
 			</Table>
 			<div className="m-2 d-flex flex-row justify-content-end">
-					<div>
-						<Button
-							className="mx-1"
-							variant="secondary"
-							disabled={page == 0}
-							onClick={() => {
-								setPage(page - 1);
-							}}
-						>
-							Anterior <i className="bi bi-chevron-left"></i>
-						</Button>
-					</div>
-					<div>
-						<Button
-							className="mx-1"
-							variant="secondary"
-							disabled={prestadores.length !== 10}
-							onClick={() => {
-								if (prestadores.length !== 0) {
-									setPage(page + 1);
-								}
-							}}
-						>
-							Próximo <i className="bi bi-chevron-right"></i>
-						</Button>
-					</div>
+				<div>
+					<Button
+						className="mx-1"
+						variant="secondary"
+						disabled={page == 0}
+						onClick={() => {
+							setPage(page - 1);
+						}}
+					>
+						Anterior <i className="bi bi-chevron-left"></i>
+					</Button>
+				</div>
+				<div>
+					<Button
+						className="mx-1"
+						variant="secondary"
+						disabled={prestadores.length !== 10}
+						onClick={() => {
+							if (prestadores.length !== 0) {
+								setPage(page + 1);
+							}
+						}}
+					>
+						Próximo <i className="bi bi-chevron-right"></i>
+					</Button>
+				</div>
 			</div>
 			{showModal && (
 				<MyModal
@@ -168,6 +179,24 @@ const ListPrestadores: React.FC<IListPrestadores> = ({
 					onConfirm={handleConfirm}
 				>
 					<h4>{select.nome}</h4>
+				</MyModal>
+			)}
+			{showModalAlert && (
+				<MyModal
+					title="Atenção"
+					show={showModalAlert}
+					onHide={() => {
+						setShowModalAlert(false);
+						setLoading(false);
+					}}
+				>
+					<p>
+						Infelizmente você não pode agendar-se com{" "}
+						<span className="text-danger fw-bolder">
+							{select.nome}
+						</span>{" "}
+						pois não há produtos para ofertar para você :(
+					</p>
 				</MyModal>
 			)}
 		</Container>

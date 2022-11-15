@@ -15,6 +15,7 @@ interface IProdutosPrestadorTableProps {
 const DescricaoTable: React.FC<IProdutosPrestadorTableProps> = ({ prestador }) => {
 	const tdRef = useRef<HTMLTableDataCellElement>(null);
 	const [show, setShow] = useState<boolean>(false);
+	const [fix, setFix] = useState<boolean>(false);
 
 	return (
 		<>
@@ -22,11 +23,19 @@ const DescricaoTable: React.FC<IProdutosPrestadorTableProps> = ({ prestador }) =
 				className="d-md-table-cell d-none table-light"
 				style={{width: "10%"}}
 				ref={tdRef}
-				onMouseEnter={() => {
+				onClick={() => {
+					setFix(!fix);
 					setShow(true);
 				}}
+				onMouseEnter={() => {
+					if (!fix) {
+						setShow(true);
+					}
+				}}
 				onMouseLeave={() => {
-					setShow(false);
+					if (!fix) {
+						setShow(false);
+					}
 				}}
 			>
 				<span className="btn btn-secondary">Descrição</span>

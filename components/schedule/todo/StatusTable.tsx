@@ -66,7 +66,7 @@ const StatusTable: React.FC<IStatusTableProps> = ({
 	return (
 		<>
 			<td
-				className={`d-md-table-cell d-none ${
+				className={`d-table-cell ${
 					(schedule.status === "agendado" && "table-secondary") ||
 					(schedule.status === "concluido" && "table-success") ||
 					(schedule.status === "cancelado" && "table-danger")

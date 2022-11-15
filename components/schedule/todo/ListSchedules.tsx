@@ -12,6 +12,7 @@ import { useUser } from "../../../contexts/UserContext";
 import { profileEnv } from "../../../auth/baseUrl";
 import axios from "axios";
 import { IAgendamento, ICliente, IPrestador } from "../../../@types/Models";
+import { type } from "os";
 
 const ListSchedules: React.FC<IAcoes> = ({
 	setTelas,
@@ -46,7 +47,9 @@ const ListSchedules: React.FC<IAcoes> = ({
 				);
 			} else {
 				data = await axios.post(
-					`${profileEnv.baseUrl}/getagendamentos${typeUser !== "login" && typeUser}`,
+					`${profileEnv.baseUrl}/getagendamentos${
+						typeUser !== "login" && typeUser
+					}`,
 					{ id: user.id, data: `${dia}/${mes}/${ano}`, page: page },
 					{
 						headers: {
@@ -136,10 +139,15 @@ const ListSchedules: React.FC<IAcoes> = ({
 				<thead className="table-dark">
 					<tr>
 						<th>Horário</th>
-						<th>{(typeUser == "prestador" || agendado) ? "Cliente" : "Prestador"}</th>
+						<th className="d-md-table-cell d-none">
+							{typeUser == "prestador" || agendado
+								? "Cliente"
+								: "Prestador"}
+						</th>
+						{typeUser == "cliente" && <th>Telefone</th>}
 						<th className="d-md-table-cell d-none">Produtos</th>
-						<th className="d-md-table-cell d-none">Status</th>
-						{!agendado && (<th>Ações</th>)}
+						<th>Status</th>
+						{!agendado && <th>Ações</th>}
 					</tr>
 				</thead>
 				<tbody>
@@ -147,93 +155,124 @@ const ListSchedules: React.FC<IAcoes> = ({
 						return (
 							<tr key={sch.id}>
 								<td>{sch.horario}</td>
-								<td>
-									{(typeUser == "prestador" || agendado) ? (sch.cliente as  ICliente).nome : (sch.prestador as IPrestador).nome}
+								<td className="d-md-table-cell d-none">
+									{typeUser == "prestador" || agendado
+										? (sch.cliente as ICliente).nome
+												.length >= 30
+											? (sch.cliente as ICliente).nome
+													.split("", 30)
+													.join("") + "..."
+											: (sch.cliente as ICliente).nome
+										: (sch.prestador as IPrestador).nome
+												.length >= 30
+										? (sch.prestador as IPrestador).nome
+												.split("", 30)
+												.join("") + "..."
+										: (sch.prestador as IPrestador).nome}
 								</td>
+								{typeUser == "cliente" && (
+									<td>
+										{(sch.prestador as IPrestador).telefone}
+									</td>
+								)}
 								<ProdutosTable schedule={sch} />
 								<StatusTable
 									schedule={sch}
 									setRestore={setRestore}
 									restore={restore}
 								/>
-								{!agendado && (<td className="d-flex justify-content-around">
-									<Button
-										size="sm"
-										variant="warning"
-										disabled={sch.status === "concluido"}
-										onClick={() =>
-											handleListEdit({
-												id: sch.id as number,
-												dataEHora: `${sch.data} ${sch.horario}`,
-												cliente: (sch.cliente as ICliente),
-												prestador: (sch.prestador as IPrestador),
-												produtos: sch.produtos,
-												status:
-													sch.status === "agendado"
-														? 0
-														: sch.status ===
-														  "cancelado"
-														? -1
-														: 1,
-											})
-										}
-									>
-										<i className="bi bi-pencil-square flex-grow-1 mx-1"></i>
-									</Button>
-									<Button
-										size="sm"
-										variant="danger"
-										disabled={sch.status === "concluido"}
-										onClick={() => handleListDelete({
-											id: sch.id as number,
-											dataEHora: `${sch.data} ${sch.horario}`,
-											cliente: (sch.cliente as ICliente),
-											prestador: (sch.prestador as IPrestador),
-											produtos: sch.produtos,
-											status:
-												sch.status === "agendado"
-													? 0
-													: sch.status ===
-													  "cancelado"
-													? -1
-													: 1,
-										})}
-									>
-										<i className="bi bi-trash-fill flex-grow-1 mx-1"></i>
-									</Button>
-								</td>)}
+								{!agendado && (
+									<td className="d-flex justify-content-around">
+										<Button
+											size="sm"
+											variant="warning"
+											disabled={
+												sch.status === "concluido"
+											}
+											onClick={() =>
+												handleListEdit({
+													id: sch.id as number,
+													dataEHora: `${sch.data} ${sch.horario}`,
+													cliente:
+														sch.cliente as ICliente,
+													prestador:
+														sch.prestador as IPrestador,
+													produtos: sch.produtos,
+													status:
+														sch.status ===
+														"agendado"
+															? 0
+															: sch.status ===
+															  "cancelado"
+															? -1
+															: 1,
+												})
+											}
+										>
+											<i className="bi bi-pencil-square flex-grow-1 mx-1"></i>
+										</Button>
+										<Button
+											size="sm"
+											variant="danger"
+											disabled={
+												sch.status === "concluido"
+											}
+											onClick={() =>
+												handleListDelete({
+													id: sch.id as number,
+													dataEHora: `${sch.data} ${sch.horario}`,
+													cliente:
+														sch.cliente as ICliente,
+													prestador:
+														sch.prestador as IPrestador,
+													produtos: sch.produtos,
+													status:
+														sch.status ===
+														"agendado"
+															? 0
+															: sch.status ===
+															  "cancelado"
+															? -1
+															: 1,
+												})
+											}
+										>
+											<i className="bi bi-trash-fill flex-grow-1 mx-1"></i>
+										</Button>
+									</td>
+								)}
 							</tr>
 						);
 					})}
 				</tbody>
 			</Table>
 			<div className="m-2 d-flex flex-row justify-content-end">
-					<div>
-						<Button
-							className="mx-1"
-							variant="secondary"
-							disabled={page == 0}
-							onClick={() => {
-								setPage(page - 1);
-							}}
-						>
-							Anterior <i className="bi bi-chevron-left"></i>
-						</Button>
-					</div>
-					<div>
-						<Button
-							className="mx-1"
-							variant="secondary"
-							disabled={schedules?.length !== 10}
-							onClick={() => {
-								if (schedules?.length !== 0) {
-									setPage(page + 1);
-								}
-							}}
-						>
-							Próximo <i className="bi bi-chevron-right"></i>
-						</Button>
-					</div>
+				<div>
+					<Button
+						className="mx-1"
+						variant="secondary"
+						disabled={page == 0}
+						onClick={() => {
+							setPage(page - 1);
+						}}
+					>
+						Anterior <i className="bi bi-chevron-left"></i>
+					</Button>
+				</div>
+				<div>
+					<Button
+						className="mx-1"
+						variant="secondary"
+						disabled={schedules?.length !== 10}
+						onClick={() => {
+							if (schedules?.length !== 0) {
+								setPage(page + 1);
+							}
+						}}
+					>
+						Próximo <i className="bi bi-chevron-right"></i>
+					</Button>
+				</div>
 			</div>
 			{typeUser == "cliente" && agendado && (
 				<Button
