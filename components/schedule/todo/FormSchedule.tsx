@@ -271,12 +271,9 @@ const FormSchedule: React.FC<IAcoes> = ({
                                                     <option
                                                         id={`${p.id}`}
                                                         value={p.descricao}
-                                                        onMouseUp={() => {
-															handleChange(p, i)
+														onPointerDown={() => {
+															handleChange(p, i);
 														}}
-                                                        onClick={() => {
-                                                            handleChange(p, i);
-                                                        }}
                                                     >
                                                         {p.descricao}
                                                     </option>
