@@ -271,7 +271,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                                                     <option
                                                         id={`${p.id}`}
                                                         value={p.descricao}
-														onPointerDown={() => {
+														onInput={() => {
 															handleChange(p, i);
 														}}
                                                     >
