@@ -271,7 +271,7 @@ const FormSchedule: React.FC<IAcoes> = ({
 													<option
 														id={`${p.id}`}
 														value={p.descricao}
-														onChange={() => {
+														onClick={() => {
 															handleChange(p, i);
 														}}
 													>
