@@ -213,6 +213,7 @@ const FormCadastroPrestador: React.FC = () => {
 							<Button
 								className="w-100"
 								variant="warning"
+								onDoubleClick={e => e.preventDefault()}
 								onClick={handleFinalizar}
 							>
 								Finalizar{" "}

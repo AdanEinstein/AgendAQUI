@@ -259,6 +259,7 @@ const FormCadastroLogin: React.FC = () => {
 									className="col-5"
 									variant="warning"
 									// style={{ width: "47%" }}
+									onDoubleClick={e => e.preventDefault()}
 									onClick={handleContinuar}
 								>
 									Continuar{" "}
