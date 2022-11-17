@@ -213,7 +213,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                 <FormControl
                     type="time"
                     ref={horarioRef}
-                    disabled={target?.estado === "deletar"}
+                    disabled={target?.estado === "deletar" || loading}
                     value={horario}
                     onChange={(e: ChangeEvent) =>
                         setHorario((e.target as HTMLInputElement).value)
@@ -237,7 +237,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                 <h4 className="flex-grow-1 text-white m-0">Produtos:</h4>
                 {typeUser == "cliente" && (
                     <Button
-                        disabled={target?.estado === "deletar"}
+                        disabled={target?.estado === "deletar" || loading}
                         onClick={() => handleAdd()}
                     >
                         Adicionar
@@ -317,6 +317,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                     className="btn-lg flex-grow-1 mx-1"
                     variant="outline-danger"
                     onClick={() => setTelas && setTelas("lista")}
+                    disabled={loading}
                 >
                     Voltar
                 </Button>
@@ -329,6 +330,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                                 ? "warning"
                                 : "danger"
                     }
+                    disabled={loading}
                     onClick={handleConfirm}
                 >
                     {target?.estado === "novo"
