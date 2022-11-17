@@ -24,6 +24,7 @@ import { handlePrice } from "../../utils/utilsPrices";
 import { useUser } from "../../../contexts/UserContext";
 import axios, { AxiosError } from "axios";
 import { profileEnv } from "../../../auth/baseUrl";
+import { info } from "console";
 
 yup.setLocale({
     mixed: {
@@ -98,8 +99,9 @@ const FormSchedule: React.FC<IAcoes> = ({
     );
 
     useEffect(() => {
-        horarioRef.current?.focus();
-        setHorario(target?.agendamento.dataEHora.split(" ")[1] || "");
+        if(horarioRef.current.value == ""){
+			setHorario(target?.agendamento.dataEHora.split(" ")[1] || "");
+		}
     }, [target, produtos]);
 
     const handleAdd = () => {
