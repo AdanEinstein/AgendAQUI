@@ -71,7 +71,7 @@ const FormCadastroPrestador: React.FC = () => {
 			.then(() => {
 				setFeedback({
 					icon: "bi bi-check-circle",
-					message: "Login válido",
+					message: "Prestador válido!",
 					color: "text-success",
 				});
 				axios

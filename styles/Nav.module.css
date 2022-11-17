@@ -31,9 +31,28 @@
     /* Sombras */
     box-shadow: #222 0.2rem 0.2rem 2rem;
     /* Fontes */
-    font-weight: lighter;
+    font-weight: normal;
     /* Tamanho */
     width: 95%;
+}
+
+.Nav .deletar {
+    /* Cores */
+    background-color: #fa0000;
+    color: aliceblue;
+    /* Margins */
+    margin: 0.1rem;
+    padding: 0.5rem;
+    /* Bordas */
+    border-radius: 0.2rem;
+    /* Sombras */
+    box-shadow: #222 0.2rem 0.2rem 2rem;
+    /* Fontes */
+    font-weight: normal;
+    /* Tamanho */
+    width: 95%;
+    /* Decoração */
+    text-decoration: none;
 }
 
 button.menuOpen {
@@ -97,4 +116,9 @@ a.link:hover{
     /* Cores */
     background-color: aliceblue;
     color: #000;
+}
+a.deletar:hover{
+    /* Cores */
+    background-color: aliceblue;
+    color: #fa0000;
 }

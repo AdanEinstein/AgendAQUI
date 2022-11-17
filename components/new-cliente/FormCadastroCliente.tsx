@@ -74,7 +74,7 @@ const FormCadastroCliente: React.FC = () => {
 			.then(() => {
 				setFeedback({
 					icon: "bi bi-check-circle",
-					message: "Login válido",
+					message: "Cliente válido!",
 					color: "text-success",
 				});
 				axios
