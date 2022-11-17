@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row } from "react-bootstrap";
+import {Button, Container, Row} from "react-bootstrap";
 import { useSchedule } from "../../contexts/ScheduleContext";
 import { ILayoutTelaSchedule } from "../../pages/schedule";
 import Layout from "../layout/Layout";
@@ -25,7 +25,7 @@ const LayoutCalendar: React.FC<ILayoutTelaSchedule> = (props) => {
 			<Nav links={links} />
 			<Container className="d-flex flex-column">
 				<Row>
-					<div className="d-flex justify-content-center my-3">
+					<div className="d-flex justify-content-around mb-4 mt-4">
 						{props.agendado ? (
 							<>
 								<h1 className="text-white d-sm-block d-none">
@@ -43,10 +43,16 @@ const LayoutCalendar: React.FC<ILayoutTelaSchedule> = (props) => {
 								}`}
 							</h1>
 						)}
+						<Button
+							variant="success"
+							onClick={() => props.setShowTela("todo")}
+						>
+							Agendamentos <i className="bi bi-list-check"></i>
+						</Button>
 					</div>
 				</Row>
 				<Row>
-					<MonthNavButton data={data} setData={setData} />
+					<MonthNavButton data={data} setData={setData}/>
 				</Row>
 				<Row className="flex-grow-1">
 					<Calendar data={data} {...props} />

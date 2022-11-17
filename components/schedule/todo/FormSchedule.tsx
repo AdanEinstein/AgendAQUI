@@ -12,19 +12,19 @@ import {
     FormControl,
     FormSelect,
 } from "react-bootstrap";
-import { useSchedule } from "../../../contexts/ScheduleContext";
-import { ISchedule } from "./ISchedule";
-import { IAcoes, ITargetAgendamento } from "./LayoutSchedule";
+import {useSchedule} from "../../../contexts/ScheduleContext";
+import {ISchedule} from "./ISchedule";
+import {IAcoes, ITargetAgendamento} from "./LayoutSchedule";
 import shortid from "shortid";
 import styles from "./FormSchedule.module.css";
 import * as yup from "yup";
-import FeedbackText, { IFeedback } from "../../utils/FeedbackText";
-import { ICliente, IProduto } from "../../../@types/Models";
-import { handlePrice } from "../../utils/utilsPrices";
-import { useUser } from "../../../contexts/UserContext";
-import axios, { AxiosError } from "axios";
-import { profileEnv } from "../../../auth/baseUrl";
-import { info } from "console";
+import FeedbackText, {IFeedback} from "../../utils/FeedbackText";
+import {ICliente, IProduto} from "../../../@types/Models";
+import {handlePrice} from "../../utils/utilsPrices";
+import {useUser} from "../../../contexts/UserContext";
+import axios, {AxiosError} from "axios";
+import {profileEnv} from "../../../auth/baseUrl";
+import {info} from "console";
 
 yup.setLocale({
     mixed: {
@@ -83,36 +83,35 @@ const feedbackDefault: IFeedback = {
 };
 
 const FormSchedule: React.FC<IAcoes> = ({
-    target,
-    setTarget,
-    setTelas,
-    setAgendado,
-}) => {
+                                            target,
+                                            setTarget,
+                                            setTelas,
+                                            setAgendado,
+                                        }) => {
     const [feedback, setFeedback] = useState<IFeedback>(feedbackDefault);
     const [loading, setLoading] = useState<boolean>(false);
     const [horario, setHorario] = useState<string>("");
     const horarioRef = useRef<HTMLInputElement>(null);
-    const { ano, mes, dia } = useSchedule();
-    const { typeUser, setAtualizar } = useUser();
+    const {ano, mes, dia} = useSchedule();
+    const {typeUser, setAtualizar} = useUser();
     const [produtos, setProdutos] = useState<IProduto[]>(
         target?.agendamento.produtos || []
     );
 
     useEffect(() => {
-        if(horarioRef.current.value == ""){
-			setHorario(target?.agendamento.dataEHora.split(" ")[1] || "");
-		}
-    }, [target, produtos]);
+        horarioRef.current.focus();
+        setHorario(target?.agendamento.dataEHora.split(" ")[1] || "");
+    }, [target]);
 
     const handleAdd = () => {
         if (produtos.length === 0) {
             setProdutos([
-                { id: shortid(), descricao: undefined, preco: "0,00" },
+                {id: shortid(), descricao: undefined, preco: "0,00"},
             ]);
         } else {
             setProdutos((oldProdutos) => [
                 ...oldProdutos,
-                { id: shortid(), descricao: undefined, preco: "0,00" },
+                {id: shortid(), descricao: undefined, preco: "0,00"},
             ]);
         }
     };
@@ -123,7 +122,8 @@ const FormSchedule: React.FC<IAcoes> = ({
         });
     };
 
-    const handleChange = (produto: IProduto, index: number) => {
+    const handleChange = (id: string, index: number) => {
+        const produto = target.agendamento.prestador.produtos.filter(p => p.id == id)[0]
         setProdutos((oldProdutos) => {
             return oldProdutos.map((p, i) => {
                 if (index === i) {
@@ -131,7 +131,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                         ...produto,
                     };
                 } else {
-                    return { ...p };
+                    return {...p};
                 }
             });
         });
@@ -161,7 +161,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                 };
                 await axios.post(
                     `${profileEnv.baseUrl}/setagendamento`,
-                    { data: envio },
+                    {data: envio},
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem(
@@ -232,7 +232,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                     value={target.agendamento.cliente.nome}
                 />
             </FloatingLabel>
-            <FeedbackText feedback={feedback} />
+            <FeedbackText feedback={feedback}/>
             <div className="d-flex my-2 align-items-center">
                 <h4 className="flex-grow-1 text-white m-0">Produtos:</h4>
                 {typeUser == "cliente" && (
@@ -250,7 +250,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                         <div
                             key={current.id}
                             className="d-flex flex-md-row flex-column my-4 p-3 bg-light bg-opacity-25 position-relative"
-                            style={{ borderRadius: "1rem" }}
+                            style={{borderRadius: "1rem"}}
                         >
                             <FloatingLabel
                                 className="flex-grow-1 m-1 text-black"
@@ -262,28 +262,28 @@ const FormSchedule: React.FC<IAcoes> = ({
                                         typeUser !== "cliente" ||
                                         loading
                                     }
-                                    value={current.descricao}
-									>
-                                    <option value="">Selecione um produto</option>
+                                    value={current.id}
+                                    onChange={(e) => {
+                                        if (e.currentTarget.value) {
+                                            handleChange(e.currentTarget.value, i)
+                                        }
+                                    }}
+                                >
+                                    <option>Selecione um produto</option>
                                     {target.agendamento.prestador.produtos
-                                        .length > 0 &&
+                                            .length > 0 &&
                                         target.agendamento.prestador.produtos.map(
-											(p) => {
+                                            (p) => {
                                                 return (
                                                     <option
                                                         id={`${p.id}`}
-                                                        value={p.descricao}
-														onClick={(e) => {
-															if (e.currentTarget.value !== "") {
-																handleChange(p, i)
-															}
-														}}
-														>
+                                                        value={p.id}
+                                                    >
                                                         {p.descricao}
                                                     </option>
                                                 );
                                             }
-											)}
+                                        )}
                                 </FormSelect>
                             </FloatingLabel>
                             <FloatingLabel
@@ -303,7 +303,7 @@ const FormSchedule: React.FC<IAcoes> = ({
                                     loading
                                 }
                                 variant="danger"
-                                style={{ top: -10, right: -10 }}
+                                style={{top: -10, right: -10}}
                                 onClick={() => handleTrash(current)}
                             >
                                 <i className="bi bi-trash-fill"></i>
@@ -326,16 +326,16 @@ const FormSchedule: React.FC<IAcoes> = ({
                         target?.estado === "novo"
                             ? "success"
                             : target?.estado === "editar"
-                            ? "warning"
-                            : "danger"
+                                ? "warning"
+                                : "danger"
                     }
                     onClick={handleConfirm}
                 >
                     {target?.estado === "novo"
                         ? "Novo"
                         : target?.estado === "editar"
-                        ? "Editar"
-                        : "Deletar"}
+                            ? "Editar"
+                            : "Deletar"}
                 </Button>
             </div>
         </Container>

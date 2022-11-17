@@ -9,7 +9,6 @@ import { ILayoutTelaSchedule } from "../../../pages/schedule";
 import Layout from "../../layout/Layout";
 import Nav from "../../layout/Nav";
 import FormSchedule from "./FormSchedule";
-import { ISchedule } from "./ISchedule";
 import ListSchedules from "./ListSchedules";
 
 type Telas = "form" | "lista";
@@ -43,13 +42,13 @@ const LayoutSchedule: React.FC<ILayoutTelaSchedule> = ({ setShowTela, agendado, 
 				<Row className="h-100">
 					<div className="col-lg-2 d-none"></div>
 					<div className="w-100 col-lg-8 col-12 d-flex flex-column justify-content-center position-relative">
-						<div className="d-flex justify-content-around mb-2 mt-5">
+						<div className="d-flex justify-content-around mb-4 mt-5">
 							{typeUser == "cliente" && (
 								<Button
 									variant="primary"
 									onClick={() => setShowTela("search")}
 								>
-									Pesquisar{" "}
+									Buscar{" "}
 									<i className="bi bi-search"></i>
 								</Button>
 							)}

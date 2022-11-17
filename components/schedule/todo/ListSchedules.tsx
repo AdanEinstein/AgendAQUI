@@ -20,6 +20,7 @@ const ListSchedules: React.FC<IAcoes> = ({
 	agendado,
 	page,
 	setPage,
+	setAgendado
 }) => {
 	const { typeUser, user } = useUser();
 	const { dia, mes, ano, schedules, setSchedules } = useSchedule();
@@ -299,10 +300,21 @@ const ListSchedules: React.FC<IAcoes> = ({
 					Novo agendamento <i className="bi bi-plus-square-fill"></i>
 				</Button>
 			)}
+			{typeUser == "cliente" && agendado && (
+				<Button
+					className="position-absolute btn-lg btn-secondary"
+					style={{ bottom: 30, left: 30 }}
+					onClick={() => {
+						setAgendado && setAgendado(null);
+					}}
+				>
+					<i className="bi bi-chevron-left"></i> Minha agenda
+				</Button>
+			)}
 		</Container>
 	) : (
 		<Container className="d-flex justify-content-center">
-			<Spinner animation="grow" variant="warning" className=""/>
+			<Spinner animation="grow" variant="warning"/>
 		</Container>
 	);
 };
