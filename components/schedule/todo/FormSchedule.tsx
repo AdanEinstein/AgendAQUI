@@ -100,7 +100,7 @@ const FormSchedule: React.FC<IAcoes> = ({
     useEffect(() => {
         horarioRef.current?.focus();
         setHorario(target?.agendamento.dataEHora.split(" ")[1] || "");
-    }, [target]);
+    }, [target, produtos]);
 
     const handleAdd = () => {
         if (produtos.length === 0) {
