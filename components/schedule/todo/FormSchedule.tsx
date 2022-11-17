@@ -261,25 +261,27 @@ const FormSchedule: React.FC<IAcoes> = ({
                                         loading
                                     }
                                     value={current.descricao}
-                                >
-                                    <option>Selecione um produto</option>
+									>
+                                    <option value="">Selecione um produto</option>
                                     {target.agendamento.prestador.produtos
                                         .length > 0 &&
                                         target.agendamento.prestador.produtos.map(
-                                            (p) => {
+											(p) => {
                                                 return (
                                                     <option
                                                         id={`${p.id}`}
                                                         value={p.descricao}
-														onInput={() => {
-															handleChange(p, i);
+														onClick={(e) => {
+															if (e.currentTarget.value !== "") {
+																handleChange(p, i)
+															}
 														}}
-                                                    >
+														>
                                                         {p.descricao}
                                                     </option>
                                                 );
                                             }
-                                        )}
+											)}
                                 </FormSelect>
                             </FloatingLabel>
                             <FloatingLabel
