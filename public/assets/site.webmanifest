@@ -1,31 +1,36 @@
 {
-    "name": "AgendAQUI",
-    "short_name": "AgendAQUI",
-    "icons": [
-      {
-        "src": "/android-chrome-192x192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "/android-chrome-384x384.png",
-        "sizes": "384x384",
-        "type": "image/png"
-      }
-    ],
-    "theme_color": "#222222",
-    "background_color": "#222222",
-    "display": "fullscreen",
-    "description": "Sistema de agendamento online, para que as pessoas tenham uma melhor gestão da sua agenda, servindo tanto para barbeiros quanto dentistas e todos os tipos de profissionais que trabalham com horários agendados.",
-    "start_url": "https://sistema-agendaqui.vercel.app/",
-    "dir": "auto",
-    "lang": "pt",
-    "orientation": "portrait",
-    "categories": [
-      "finance",
-      "personalization",
-      "productivity",
-      "social",
-      "utilities"
-    ]
-  }
+  "name": "AgendAQUI",
+  "short_name": "AgendAQUI",
+  "icons": [
+    {
+      "src": "/android-launchericon-192-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-launchericon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#222222",
+  "background_color": "#222222",
+  "display": "fullscreen",
+  "description": "Sistema de agendamento online, para que as pessoas tenham uma melhor gestão da sua agenda, servindo tanto para barbeiros quanto dentistas e todos os tipos de profissionais que trabalham com horários agendados.",
+  "start_url": "https://sistema-agendaqui.vercel.app/",
+  "dir": "auto",
+  "lang": "pt",
+  "orientation": "portrait",
+  "categories": [
+    "finance",
+    "personalization",
+    "productivity",
+    "social",
+    "utilities"
+  ]
+}
