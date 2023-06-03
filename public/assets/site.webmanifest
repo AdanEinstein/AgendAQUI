@@ -18,6 +18,20 @@
       "type": "image/png"
     }
   ],
+  "screenshots": [
+    {
+      "src":"/assets/initial.png",
+      "sizes":"1867x956",
+      "type":"image/png",
+      "description":"Tela inicial do app"
+    },
+    {
+      "src":"/assets/calendar.png",
+      "sizes":"1867x956",
+      "type":"image/png",
+      "description":"Tela de agendamentos"
+    }
+  ],
   "theme_color": "#222222",
   "background_color": "#222222",
   "display": "fullscreen",
