@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import styles from "./Week.module.css";
 
-const WeekDay: React.FC<PropsWithChildren> = ({ children }) => {
+const WeekDay: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 	return (
 		<div className="WeekDay d-flex justify-content-center align-items-center flex-grow-1">
 			{children}

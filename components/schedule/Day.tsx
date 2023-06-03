@@ -13,7 +13,7 @@ interface DayProps {
 	onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
-const Day: React.FC<DayProps & PropsWithChildren> = ({
+const Day: React.FC<PropsWithChildren<DayProps>> = ({
 	children,
 	thisDay,
 	notThisMonth,

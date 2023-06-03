@@ -9,6 +9,6 @@ const baseUrlJava = {
 };
 
 export const profileEnv = {
-    baseUrl: baseUrl.dev_api,
+    baseUrl: baseUrl.prod_api,
     baseUrlJava: baseUrlJava.prod_api,
 };
