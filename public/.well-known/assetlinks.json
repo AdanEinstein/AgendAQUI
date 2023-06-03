@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "app.vercel.sistema_agendaqui.twa",
+                     "sha256_cert_fingerprints": ["67:0E:CC:A2:B1:0B:5F:91:5F:65:9C:E8:27:A3:E5:E4:E7:DE:BD:D0:CC:67:A3:8A:65:45:7A:7F:DD:26:C7:AF"] }
+      }
+]
