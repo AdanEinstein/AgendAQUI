@@ -1,6 +1,6 @@
 [{
         "relation": ["delegate_permission/common.handle_all_urls"],
         "target" : { "namespace": "android_app", "package_name": "app.vercel.sistema_agendaqui.twa",
-                     "sha256_cert_fingerprints": ["67:0E:CC:A2:B1:0B:5F:91:5F:65:9C:E8:27:A3:E5:E4:E7:DE:BD:D0:CC:67:A3:8A:65:45:7A:7F:DD:26:C7:AF"] }
+                     "sha256_cert_fingerprints": ["4B:A9:A3:85:4B:21:47:BE:F8:74:3B:47:2C:A4:8D:60:E8:9F:81:69:FB:79:49:48:11:99:E4:DF:A9:3E:6A:49"] }
       }
 ]
